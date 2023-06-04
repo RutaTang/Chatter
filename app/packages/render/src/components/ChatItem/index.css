@@ -1,0 +1,6 @@
+.empty-height-invarant:empty:before{
+    content:"";
+    display:inline-block;
+}
+
+
