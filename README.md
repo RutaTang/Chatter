@@ -51,3 +51,5 @@ This showcase is in **dark** theme.
 ## Status
 
 **Chatter** is currently in active development! 👨‍💻
+
+**_Note: There will be release when it's ready. If you are not patient to wait for it, you can clone this repo and build it._**
