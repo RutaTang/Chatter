@@ -38,6 +38,16 @@
 * Built-in and extendable **Action** plugins
 * And more...
 
+## Showcases
+
+Current there are many themes supported and in the future there will be even more!
+
+This showcase is in **dark** theme.
+
+| Home | Settings |
+|:-------------------------:|:-------------------------:|
+|<img src="./art/showcase-home.png"/>| <img src="./art/showcase-settings.png"/> |
+
 ## Status
 
 **Chatter** is currently in active development! 👨‍💻
