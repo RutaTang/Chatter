@@ -18,7 +18,7 @@ export function integrateBackendConditionally<ReturnType>(
     }
 ): Promise<ReturnType> | ReturnType {
     // Get the current backend from the environment variables
-    const backend = (import.meta.env.VITE_BACKEND || "none") as Backend
+    const backend = (import.meta.env.MODE || "none") as Backend
 
     // Check if the backend is supported
     if (!Object.values(Backend).includes(backend)) {

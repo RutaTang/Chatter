@@ -2,6 +2,7 @@ module.exports = {
     packagerConfig: {
         extraResource: [
             "../plugins",
+            "../render/dist"
         ],
         ignore: [
             /\.sqlite$/,

@@ -5,8 +5,9 @@
     "type": "module",
     "scripts": {
         "dev": "vite",
-        "dev-integrate-electron": "VITE_BACKEND=electron vite",
         "build": "tsc && vite build",
+        "dev-integrate-electron": "vite --mode electron",
+        "build-integrate-electron": "tsc && vite build --mode electron",
         "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
         "preview": "vite preview",
         "storybook": "storybook dev -p 6006",

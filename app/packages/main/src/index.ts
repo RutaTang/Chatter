@@ -15,7 +15,11 @@ const createWindow = () => {
             preload: path.join(__dirname, 'preload.js')
         }
     })
-    win.loadURL('http://localhost:5173')
+    if (app.isPackaged) {
+        win.loadFile(path.join(process.resourcesPath, 'dist/index.html'))
+    } else {
+        win.loadURL('http://localhost:5173')
+    }
 }
 
 app.whenReady().then(() => {
