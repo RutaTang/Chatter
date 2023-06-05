@@ -1,11 +1,11 @@
-import type { Manifest, Message, Messages } from "../general";
+import type { Manifest, Message } from "../general";
 
 export interface ChatAPI {
     complete({
         messages,
         manifest
     }: {
-        messages: Messages,
+        messages: Omit<Message, "id">[],
         manifest?: Manifest
     }): Promise<Message>;
 }

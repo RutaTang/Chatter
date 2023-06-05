@@ -4,12 +4,11 @@ import DialogueItem from "../DialogueItem";
 import DialogueInput from "../DialogueInput";
 import InCompleting from "../InCompleting";
 import DialogueHead from "../DialogueHead";
+import { Message } from "../../types";
 
+import type { Props as DialoguItemPros } from '../DialogueItem';
+import type { Message as DialogueInputMessage } from '../DialogueInput'
 
-type Message = Required<{
-    role: string;
-    content: string;
-}>
 
 interface Props {
     title: string
@@ -17,9 +16,14 @@ interface Props {
     agentIcon: ({ role }: { role: string; }) => ReactNode
     defaultDialogueInputRole?: string
     messages?: Message[]
-    onComplete?: (message: Message) => void
-    onAdd?: (message: Message) => void
-    onAddAndComplete?: (message: Message) => void
+
+    // Item features
+    btns?: DialoguItemPros['btns']
+
+    // Completing
+    onComplete?: (message: DialogueInputMessage) => void
+    onAdd?: (message: DialogueInputMessage) => void
+    onAddAndComplete?: (message: DialogueInputMessage) => void
     isCompleting?: boolean
 
     // Models 
@@ -29,7 +33,8 @@ interface Props {
 }
 
 export default function({
-    messages, roles, agentIcon, onComplete, onAdd, defaultDialogueInputRole, onAddAndComplete, title, isCompleting = false, models, onSelectModel, defaultModel
+    messages, roles, agentIcon, onComplete, onAdd, defaultDialogueInputRole, onAddAndComplete, title, isCompleting = false, models, onSelectModel, defaultModel,
+    btns
 }: Props) {
     // Ref
     const myRef = useRef<HTMLLIElement>(null)
@@ -69,8 +74,10 @@ export default function({
                         return (
                             <li key={idx}>
                                 <DialogueItem
+                                    id={message.id}
                                     className={`px-10 py-10 ${idx % 2 == 0 && "bg-base-200"}`}
                                     agentIcon={agentIcon}
+                                    btns={btns}
                                     content={message.content}
                                     defaultRole={message.role}
                                     roles={roles} />

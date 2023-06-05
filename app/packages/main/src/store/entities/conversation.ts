@@ -12,7 +12,7 @@ export class Conversation {
     @Column({
         nullable: true
     })
-    description!: string;
+    description?: string;
 
     @Column({
         type: "datetime",
@@ -33,6 +33,8 @@ export class Conversation {
     model!: string;
 
 
-    @OneToMany(() => Message, message => message.conversation)
+    @OneToMany(() => Message, message => message.conversation, {
+        nullable: true
+    })
     messages?: Message[]
 }

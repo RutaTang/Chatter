@@ -3,7 +3,7 @@ import { NAME } from "./constants"
 import { Conversation, Conversations, Message } from "../../types"
 import { integrateBackendConditionally } from "../../utils/integrate"
 import { RootState } from ".."
-import { AddConversationChannel, AddConversationChannelArgs, AddConversationChannelReturn, AddMessageChannel, AddMessageChannelArgs, CompleteMessagesChannel, CompleteMessagesChannelArgs, CompleteMessagesChannelReturn, DeleteConversationChannel, DeleteConversationChannelArgs, GetModelForConversationChannel, GetModelForConversationChannelArgs, GetModelForConversationChannelReturn, ListAllModelsChannel, ListAllModelsChannelArgs, ListAllModelsChannelReturn, ListConversationsChannel, ListConversationsChannelArgs, ListConversationsChannelReturn, ListMessagesChannel, ListMessagesChannelArgs, RetitleConversationChannel, RetitleConversationChannelArgs, UpdateModelForConversationChannel, UpdateModelForConversationChannelArgs } from "types"
+import { AddConversationChannel, AddConversationChannelArgs, AddConversationChannelReturn, AddMessageChannel, AddMessageChannelArgs, CompleteMessagesChannel, CompleteMessagesChannelArgs, CompleteMessagesChannelReturn, DeleteConversationChannel, DeleteConversationChannelArgs, GetModelForConversationChannel, GetModelForConversationChannelArgs, GetModelForConversationChannelReturn, ListAllModelsChannel, ListAllModelsChannelArgs, ListAllModelsChannelReturn, ListConversationsChannel, ListConversationsChannelArgs, ListConversationsChannelReturn, ListMessagesChannel, ListMessagesChannelArgs, RetitleConversationChannel, RetitleConversationChannelArgs, SwapTwoMessagesForAConversationChannel, SwapTwoMessagesForAConversationChannelArgs, UpdateModelForConversationChannel, UpdateModelForConversationChannelArgs } from "types"
 import { invock } from "../../utils/service"
 import { Omit } from "@react-spring/web"
 
@@ -117,6 +117,7 @@ export const completeMessages = createAsyncThunk(
                 return {
                     id: conversationId,
                     message: {
+                        id: "1",
                         role: "assistant",
                         content: "This is a test message",
                     }
@@ -147,10 +148,12 @@ export const listMessages = createAsyncThunk(
             none: () => {
                 let messages: Message[] = [
                     {
+                        id: "1",
                         role: "user",
                         content: "This is a test message",
                     },
                     {
+                        id: "2",
                         role: "assistant",
                         content: "This is a test message",
                     }
@@ -171,20 +174,25 @@ export const listMessages = createAsyncThunk(
     }
 )
 
-export const addMessage = createAsyncThunk(
-    `${NAME}/addMessage`,
-    async ({
-        conversationId, message
-    }: {
+export const addMessage = createAsyncThunk<
+    void,
+    {
         conversationId: Conversation['id'],
-        message: Message
-    }) => {
-        return await integrateBackendConditionally<{ conversationId: Conversation['id'], message: Message }>({
+        message: Omit<Message, 'id'>,
+    },
+    {
+        state: RootState
+    }
+>(
+    `${NAME}/addMessage`,
+    async (
+        {
+            conversationId, message
+        },
+        thunkApi
+    ) => {
+        await integrateBackendConditionally<void>({
             none: () => {
-                return {
-                    conversationId: conversationId,
-                    message,
-                }
             },
             electron: async () => {
                 await invock<AddMessageChannel, AddMessageChannelArgs>("add-message", {
@@ -192,10 +200,7 @@ export const addMessage = createAsyncThunk(
                     role: message.role,
                     content: message.content,
                 })
-                return {
-                    conversationId: conversationId,
-                    message,
-                }
+                await thunkApi.dispatch(listMessages(conversationId))
             }
         })
     }
@@ -205,7 +210,7 @@ export const addMessageAndCompleteChat = createAsyncThunk<
     void,
     {
         conversationId: Conversation['id'],
-        message: Message,
+        message: Omit<Message, 'id'>,
         model: string
     },
     {
@@ -220,7 +225,10 @@ export const addMessageAndCompleteChat = createAsyncThunk<
         const messages = await integrateBackendConditionally({
             none: () => {
                 const messages = thunkAPI.getState().chat.currentChatMessages
-                messages?.push(message)
+                messages?.push({
+                    id: "1",
+                    ...message
+                })
                 return messages || []
             },
             electron: async () => {
@@ -271,3 +279,62 @@ export const updateModelForCurrentConversation = createAsyncThunk(
         }
     }
 )
+
+export const swapTwoMessagesForCurrentConversation = createAsyncThunk<
+    void,
+    {
+        conversationId: string,
+        firstMessageId: string,
+        secondMessageId: string,
+    },
+    {
+        state: RootState
+    }
+>(
+    `${NAME}/swapTwoMessagesForCurrentConversation`,
+    async ({
+        conversationId, firstMessageId, secondMessageId
+    }, thunkApi) => {
+        await invock<SwapTwoMessagesForAConversationChannel, SwapTwoMessagesForAConversationChannelArgs>("swap-two-messages-for-a-conversation", {
+            conversationId,
+            firstMessageId,
+            secondMessageId
+        })
+        await thunkApi.dispatch(listMessages(conversationId))
+    }
+)
+
+export const moveMessageUpOrDown = createAsyncThunk<
+    void,
+    {
+        conversationId: string,
+        messageId: string,
+        direction: "up" | "down"
+    },
+    {
+        state: RootState
+    }
+>(
+    `${NAME}/moveMessageUpForCurrentConversation`,
+    async ({
+        conversationId, messageId, direction
+    }, thunkApi) => {
+        const messages = thunkApi.getState().chat.currentChatMessages
+        if (messages == undefined) return
+        if (messages.length <= 1) return
+        const messageIdx = thunkApi.getState().chat.currentChatMessages?.findIndex((message) => message.id === messageId)
+        if (messageIdx == undefined) return
+        let secondMessageId;
+        if (direction === "up") {
+            if (messageIdx === 0) return
+            secondMessageId = thunkApi.getState().chat.currentChatMessages![messageIdx - 1].id
+        } else {
+            if (messageIdx === messages.length - 1) return
+            secondMessageId = thunkApi.getState().chat.currentChatMessages![messageIdx + 1].id
+        }
+        await thunkApi.dispatch(swapTwoMessagesForCurrentConversation({
+            conversationId,
+            firstMessageId: messageId,
+            secondMessageId: secondMessageId
+        }))
+    })

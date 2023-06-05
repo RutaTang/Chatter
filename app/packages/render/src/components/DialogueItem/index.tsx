@@ -3,13 +3,19 @@ import hljs from 'highlight.js'
 import { micromark } from 'micromark'
 import { useState, useEffect } from "react";
 
-interface Props {
+
+export interface Props {
     agentIcon: ({ role }: { role: string }) => React.ReactNode;
+    id: string;
     content: string;
     roles: string[];
     defaultRole?: string;
     className?: string;
-    btns?: React.ReactNode[];
+    btns?: ((message: {
+        id: string;
+        role: string;
+        content: string;
+    }) => React.ReactNode)[];
 }
 
 /**
@@ -25,7 +31,7 @@ interface Props {
  * 
  * @returns {JSX.Element} The chat dialogue component.
  */
-export default function({ agentIcon, content, roles, defaultRole, className = "", btns }: Props): JSX.Element {
+export default function({ agentIcon, content, roles, defaultRole, className = "", btns, id }: Props): JSX.Element {
 
     // Guards
     if (!roles || roles.length === 0) {
@@ -38,13 +44,8 @@ export default function({ agentIcon, content, roles, defaultRole, className = ""
 
 
     // States
-    const [currentRole, setCurrentRole] = useState(defaultRole || roles[0])
+    const [currentRole, setCurrentRole] = useState<string>("")
 
-    // Effects
-    useEffect(() => {
-        import("highlight.js/styles/github-dark.css")
-        hljs.highlightAll()
-    }, [content])
 
     // Animations
     const [rightBtnsAnimationStyles, rightBtnsAnimationApi] = useSpring(() => ({
@@ -83,6 +84,14 @@ export default function({ agentIcon, content, roles, defaultRole, className = ""
         })
     }
 
+    // Effects
+    useEffect(() => {
+        import("highlight.js/styles/github-dark.css")
+        hljs.highlightAll()
+    }, [content])
+    useEffect(() => {
+        setCurrentRole(defaultRole || roles[0])
+    }, [defaultRole])
 
     return (
         <div className={[
@@ -106,7 +115,7 @@ export default function({ agentIcon, content, roles, defaultRole, className = ""
                 {/* Options */}
                 <div className="w-full flex flex-row justify-between">
                     {/* Chat role */}
-                    <select className="select select-sm border focus:outline-none bg-transparent" defaultValue={defaultRole} onChange={e => {
+                    <select className="select select-sm border focus:outline-none bg-transparent" value={currentRole} onChange={e => {
                         setCurrentRole(e.target.value)
                         animateAgentIcon()
                     }}>
@@ -117,9 +126,13 @@ export default function({ agentIcon, content, roles, defaultRole, className = ""
                         }
                     </select>
                     {/* Chat functions */}
-                    <animated.div className="flex flex-row space-x-3" style={rightBtnsAnimationStyles}>
+                    <animated.div className="flex flex-row space-x-3 [&>*]:cursor-pointer" style={rightBtnsAnimationStyles}>
                         {
-                            btns?.map((btn) => btn)
+                            btns?.map((btn, idx) => <div key={idx}>{btn({
+                                id: id,
+                                role: currentRole,
+                                content,
+                            })}</div>)
                         }
                     </animated.div>
                 </div>

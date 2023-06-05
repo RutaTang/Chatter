@@ -1,16 +1,19 @@
 import { ReactNode, useContext, useEffect, } from "react"
-import { Settings } from "lucide-react";
+import { ChevronDown, ChevronUp, Settings } from "lucide-react";
 
 import SideBar from "../components/SideBar"
 import Dialogue from "../components/Dialogue"
 import { ROLE_ICON_MAP } from "../constants"
 import { useAppDispatch, useAppSelector } from "../store"
-import { addConversation, addMessage, deleteConversation, loadConversations, updateConversationTitle, completeMessages, listMessages, addMessageAndCompleteChat, loadAllModels, getModelForCurrentConversation, updateModelForCurrentConversation } from "../store/conversationSlice/thunks"
+import { addConversation, addMessage, deleteConversation, loadConversations, updateConversationTitle, completeMessages, listMessages, addMessageAndCompleteChat, loadAllModels, getModelForCurrentConversation, updateModelForCurrentConversation, swapTwoMessagesForCurrentConversation, moveMessageUpOrDown } from "../store/conversationSlice/thunks"
 import { selectChat } from "../store/conversationSlice";
 import { Conversation, Message, Role } from "../types";
 import OptionBtn from "../components/OptionBtn";
 import SettingsPage from "./Settings";
 import { ModalContext } from "../contexts/Modal";
+import { Omit } from "@react-spring/web";
+
+import type { Props as DialogueItemProps } from "../components/DialogueItem"
 
 export default function() {
 
@@ -48,7 +51,7 @@ export default function() {
     const distpatchSelectChat = (chatId: Conversation['id']) => {
         dispatch(selectChat(chatId))
     }
-    const dispatchAddMessage = (message: Message) => {
+    const dispatchAddMessage = (message: Omit<Message, 'id'>) => {
         if (!currentChat?.id) {
             return
         }
@@ -76,7 +79,7 @@ export default function() {
         }
         dispatch(listMessages(currentChat.id))
     }
-    const dispatchAddMessageAndCompleteChat = (message: Message) => {
+    const dispatchAddMessageAndCompleteChat = (message: Omit<Message, "id">) => {
         if (!currentChat?.id) {
             return
         }
@@ -106,8 +109,19 @@ export default function() {
         }))
     }
 
+    const dispatchMoveMessageUpOrDown = (messageId: Message['id'], direction: "up" | "down") => {
+        if (!currentChat?.id) {
+            return
+        }
+        dispatch(moveMessageUpOrDown({
+            direction,
+            conversationId: currentChat.id,
+            messageId
+        }))
+    }
+
     // More UIs
-    const optionList = [
+    const sideBarOptionList = [
         <div onClick={() => {
             // Click to show Setting Modal
             show(
@@ -118,6 +132,34 @@ export default function() {
         }}>
             <OptionBtn title={"Settings"} leftIcon={<Settings size={20} />} />
         </div>
+    ]
+    const conversationItemFeaturesBtns: DialogueItemProps['btns'] = [
+        // Move message up
+        ({
+            id
+        }) => {
+            return (
+                <div onClick={() => {
+                    dispatchMoveMessageUpOrDown(id, "up")
+                }}>
+                    <ChevronUp size={16} />
+                </div>
+            )
+        }
+        ,
+        // Move message down
+        ({
+            id
+        }) => {
+            return (
+                <div onClick={() => {
+                    dispatchMoveMessageUpOrDown(id, "down")
+                }}>
+                    <ChevronDown size={16} />
+                </div >
+            )
+
+        }
     ]
 
 
@@ -158,7 +200,7 @@ export default function() {
                     onUpdateChatTitle={(chat, newTitle) => {
                         dispatchUpdateChatTitle(chat.id, newTitle)
                     }}
-                    optionList={optionList}
+                    optionList={sideBarOptionList}
                 />
             </div>
             {/* Divider */}
@@ -168,6 +210,7 @@ export default function() {
                 {
                     currentChat ? (
                         <Dialogue
+                            btns={conversationItemFeaturesBtns}
                             title={currentChat?.title || ""}
                             isCompleting={isCompleting}
                             defaultDialogueInputRole={Role.User}

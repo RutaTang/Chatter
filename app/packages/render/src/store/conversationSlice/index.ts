@@ -1,7 +1,7 @@
 import { createSlice, } from "@reduxjs/toolkit"
 
 import { NAME } from "./constants"
-import { addConversation, addMessage, deleteConversation, loadConversations, updateConversationTitle, completeMessages, listMessages, loadAllModels, getModelForCurrentConversation, updateModelForCurrentConversation } from "./thunks"
+import { addConversation, deleteConversation, loadConversations, updateConversationTitle, completeMessages, listMessages, loadAllModels, getModelForCurrentConversation, updateModelForCurrentConversation } from "./thunks"
 import { sortChats } from "./utils"
 import { Conversation, Message, Conversations } from "../../types"
 
@@ -83,12 +83,6 @@ export const conversationSlice = createSlice({
             // Chat Messages
             .addCase(listMessages.fulfilled, (state, action) => {
                 state.currentChatMessages = action.payload.messages
-            })
-            .addCase(addMessage.fulfilled, (state, action) => {
-                if (state.currentChat) {
-                    state.currentChatMessages?.push(action.payload.message)
-                    state.currentChat.updatedAt = new Date().getTime()
-                }
             })
             // Models
             .addCase(loadAllModels.fulfilled, (state, action) => {

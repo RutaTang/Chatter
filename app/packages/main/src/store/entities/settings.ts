@@ -10,8 +10,10 @@ export class SettingSideSection {
     })
     title!: string;
 
-    @OneToMany(() => SettingSideSectionItem, (item) => item.section)
-    items!: SettingSideSectionItem[];
+    @OneToMany(() => SettingSideSectionItem, (item) => item.section, {
+        nullable: true
+    })
+    items?: SettingSideSectionItem[];
 }
 
 @Entity()
@@ -29,8 +31,10 @@ export class SettingSideSectionItem {
     })
     section!: SettingSideSection;
 
-    @OneToMany(() => SettingContentSection, (subItem) => subItem.sideSectionItem)
-    contentSections!: SettingContentSection[];
+    @OneToMany(() => SettingContentSection, (subItem) => subItem.sideSectionItem, {
+        nullable: true
+    })
+    contentSections?: SettingContentSection[];
 }
 
 @Entity()
@@ -42,8 +46,10 @@ export class SettingContentSection {
     @Column()
     title!: string;
 
-    @OneToMany(() => SettingContentSectionItem, (item) => item.section)
-    items!: SettingContentSectionItem[];
+    @OneToMany(() => SettingContentSectionItem, (item) => item.section, {
+        nullable: true
+    })
+    items?: SettingContentSectionItem[];
 
     @ManyToOne(() => SettingSideSectionItem, (subItem) => subItem.contentSections, {
         cascade: true,

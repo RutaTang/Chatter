@@ -14,5 +14,10 @@ export type AddMessageChannelReturn = void
 
 // CompleteMessages Channel
 export type CompleteMessagesChannel = "complete-messages"
-export type CompleteMessagesChannelArgs = { model: string, messages: Messages }
-export type CompleteMessagesChannelReturn = Message 
+export type CompleteMessagesChannelArgs = { model: string, messages: Omit<Message, "id">[] }
+export type CompleteMessagesChannelReturn = Message
+
+// SwapTwoMessagesForAConversation Channel
+export type SwapTwoMessagesForAConversationChannel = "swap-two-messages-for-a-conversation"
+export type SwapTwoMessagesForAConversationChannelArgs = { conversationId: string, firstMessageId: string, secondMessageId: string }
+export type SwapTwoMessagesForAConversationChannelReturn = void

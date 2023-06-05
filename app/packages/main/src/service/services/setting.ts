@@ -6,7 +6,13 @@ import type { LoadSideSectionsAndItemsChannelArgs, LoadSideSectionsAndItemsChann
 export class LoadSideSectionsAndItems extends Service {
 
     async process(_: any, _args: LoadSideSectionsAndItemsChannelArgs): Promise<LoadSideSectionsAndItemsChannelReturn> {
-        const r = await loadSideSectionsAndItems()
+        const data = await loadSideSectionsAndItems()
+        const r = data.map(sideSection => {
+            return {
+                title: sideSection.title,
+                items: sideSection.items || []
+            }
+        })
         return r
     }
 
@@ -17,7 +23,13 @@ export class GetContentSectionsAndItems extends Service {
 
     async process(_: any, { sideItemId }: GetContentSectionsAndItemsChannelArgs): Promise<GetContentSectionsAndItemsChannelReturn> {
         const sectionsAndItems = await getContentSectionsAndItems(sideItemId)
-        return sectionsAndItems
+        const r = sectionsAndItems.map(contentSection => {
+            return {
+                title: contentSection.title,
+                items: contentSection.items || []
+            }
+        })
+        return r
     }
 
 }

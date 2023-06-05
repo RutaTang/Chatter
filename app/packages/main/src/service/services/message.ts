@@ -1,8 +1,8 @@
-import { addMessage, listMessages } from "../../store/operations/message";
+import { addMessage, listMessages, swapMessagesOrder } from "../../store/operations/message";
 import { getManifest } from "../../store/operations/settings";
 import { BUILT_IN_MODELS_PLUGINS_PATH } from "../../utils";
 import { Service, serviceEngine } from "../engine";
-import type { AddMessageChannel, AddMessageChannelArgs, AddMessageChannelReturn, ChatAPI, CompleteMessagesChannel, CompleteMessagesChannelArgs, CompleteMessagesChannelReturn, ListMessagesChannel, ListMessagesChannelArgs, ListMessagesChannelReturn, Manifest } from 'types'
+import type { AddMessageChannel, AddMessageChannelArgs, AddMessageChannelReturn, ChatAPI, CompleteMessagesChannel, CompleteMessagesChannelArgs, CompleteMessagesChannelReturn, ListMessagesChannel, ListMessagesChannelArgs, ListMessagesChannelReturn, Manifest, SwapTwoMessagesForAConversationChannel, SwapTwoMessagesForAConversationChannelArgs, SwapTwoMessagesForAConversationChannelReturn } from 'types'
 import fs from 'fs'
 import { parse } from "yaml";
 import path from "path";
@@ -68,6 +68,17 @@ export class CompleteMessages extends Service {
             manifest: await getManifest(model)
         })
         return message
+    }
+
+}
+
+
+@serviceEngine.handle<SwapTwoMessagesForAConversationChannel>("swap-two-messages-for-a-conversation")
+export class SwapTwoMessagesForAConversation extends Service {
+
+    async process(_: any, { conversationId, firstMessageId, secondMessageId }: SwapTwoMessagesForAConversationChannelArgs): Promise<SwapTwoMessagesForAConversationChannelReturn> {
+        console.log(conversationId, firstMessageId, secondMessageId)
+        await swapMessagesOrder(conversationId, firstMessageId, secondMessageId)
     }
 
 }

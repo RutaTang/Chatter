@@ -14,6 +14,7 @@ export type Conversation = {
 export type Conversations = Conversation[]
 
 export type Message = {
+    id: string
     role: string
     content: string
 }

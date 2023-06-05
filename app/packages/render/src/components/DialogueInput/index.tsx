@@ -1,7 +1,7 @@
 import { animated, config, useSpring } from "@react-spring/web"
 import { useState } from "react"
 
-type Message = Required<{
+export type Message = Required<{
     role: string;
     content: string;
 }>

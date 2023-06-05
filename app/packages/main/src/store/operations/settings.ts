@@ -248,18 +248,18 @@ export async function getManifest(modelName: string): Promise<Manifest> {
     const contentSections = sideItem.contentSections
     const manifest: Manifest = {
         name: sideItem.title,
-        sections: contentSections.map(contentSection => {
+        sections: contentSections?.map(contentSection => {
             return {
                 title: contentSection.title,
-                items: contentSection.items.map(contentSectionItem => {
+                items: contentSection.items?.map(contentSectionItem => {
                     return {
                         title: contentSectionItem.title,
                         description: contentSectionItem.description,
                         value: contentSectionItem.value
                     }
-                })
+                }) || []
             }
-        })
+        }) || []
     }
     return manifest
 }
@@ -273,5 +273,5 @@ export async function listAllModels() {
             title: "Models"
         }
     })
-    return sideSection.items.map(item => item.title)
+    return sideSection.items?.map(item => item.title) || []
 }
