@@ -16,10 +16,10 @@ export default function() {
 
     // Dispatchs
     const dispatch = useAppDispatch()
-    const dispatchSetCurrentSideSection = (section: string) => {
-        dispatch(setCurrentSideSection(section))
+    const dispatchSetCurrentSideSection = (sectionId: number) => {
+        dispatch(setCurrentSideSection(sectionId))
     }
-    const dispatchUpdateContentOptionItem = (contentItemId: string, value: string) => {
+    const dispatchUpdateContentOptionItem = (contentItemId: number, value: string) => {
         dispatch(updateContentItemValue({
             contentItemId,
             value
@@ -49,7 +49,7 @@ export default function() {
             <div className="w-[25%] h-full bg-base-300 shrink-0" >
                 <SettingsSideBar
                     sections={sideSections}
-                    activeOption={currentSideItemId}
+                    activeItemId={currentSideItemId}
                     onClick={dispatchSetCurrentSideSection} />
             </div>
             <div className="grow h-full bg-base-200 px-10 py-10">

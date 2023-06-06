@@ -46,7 +46,7 @@ export const Default: Story = {
                 ]
             }
         ]}
-        activeOption="Theme"
+        activeItemId="Theme"
         onClick={console.log}
     />
 }
