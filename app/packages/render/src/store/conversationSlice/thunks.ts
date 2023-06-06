@@ -282,9 +282,9 @@ export const updateModelForCurrentConversation = createAsyncThunk(
 export const swapTwoMessagesForCurrentConversation = createAsyncThunk<
     void,
     {
-        conversationId: number,
-        firstMessageId: number,
-        secondMessageId: number,
+        conversationId: any,
+        firstMessageId: any,
+        secondMessageId: any,
     },
     {
         state: RootState
@@ -306,8 +306,8 @@ export const swapTwoMessagesForCurrentConversation = createAsyncThunk<
 export const moveMessageUpOrDown = createAsyncThunk<
     void,
     {
-        conversationId: number,
-        messageId: number,
+        conversationId: any,
+        messageId: any,
         direction: "up" | "down"
     },
     {
@@ -341,7 +341,7 @@ export const moveMessageUpOrDown = createAsyncThunk<
 export const updateMessageRole = createAsyncThunk<
     void,
     {
-        messageId: number,
+        messageId: any,
         role: string
     },
     {

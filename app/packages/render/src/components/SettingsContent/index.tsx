@@ -3,7 +3,7 @@ import SettingsItem from "../SettingsItem";
 
 interface Props {
     sections?: SettingsContentSectionData[]
-    onActionValueChange?: (contentItemId: number, value: any) => void
+    onActionValueChange?: (contentItemId: any, value: any) => void
 }
 
 export default function({ sections, onActionValueChange = () => { } }: Props) {

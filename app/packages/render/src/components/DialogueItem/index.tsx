@@ -1,22 +1,22 @@
 import { animated, config, useSpring } from "@react-spring/web";
 import hljs from 'highlight.js'
 import { micromark } from 'micromark'
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 
 
 export interface Props {
     agentIcon: ({ role }: { role: string }) => React.ReactNode;
-    id: number;
+    id: any;
     content: string;
     roles: string[];
     defaultRole?: string;
     className?: string;
     btns?: ((message: {
-        id: number;
+        id: any;
         role: string;
         content: string;
     }) => React.ReactNode)[];
-    onRoleChange?: (id: number, role: string) => void;
+    onRoleChange?: (id: any, role: string) => void;
 }
 
 /**

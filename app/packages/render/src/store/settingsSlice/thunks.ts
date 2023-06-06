@@ -12,7 +12,7 @@ import { RootState } from "..";
 export const updateContentItemValue = createAsyncThunk<
     void,
     {
-        contentItemId: number,
+        contentItemId: any,
         value: string
     },
     {
@@ -38,7 +38,7 @@ export const loadSideSectionsAndItems = createAsyncThunk(
 export const setCurrentContentSection = createAsyncThunk(
     `${NAME}/setCurrentContentSection`,
     async ({ sideItemId }: {
-        sideItemId: number
+        sideItemId: any
     }) => {
         const r = await invock<GetContentSectionsAndItems>("get-content-sections-and-items", {
             sideItemId

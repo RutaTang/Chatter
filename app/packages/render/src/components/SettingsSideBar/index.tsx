@@ -2,12 +2,12 @@ interface Props {
     sections?: {
         title: string;
         items: {
-            id: number;
+            id: any;
             title: string;
         }[]
     }[];
     activeItemId?: number;
-    onClick?: (id: number) => void;
+    onClick?: (id: any) => void;
 }
 export default function({ sections, activeItemId: activeItem, onClick }: Props) {
     return (

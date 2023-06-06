@@ -2,7 +2,7 @@ import ChatItem from "../ChatItem";
 import NewChatButton from "../NewChatBtn";
 
 interface RequiredID {
-    id: number
+    id: any
     title: string
 }
 
