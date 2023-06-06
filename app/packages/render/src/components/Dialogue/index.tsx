@@ -16,6 +16,7 @@ interface Props {
     agentIcon: ({ role }: { role: string; }) => ReactNode
     defaultDialogueInputRole?: string
     messages?: Message[]
+    onRoleChange?: DialoguItemPros['onRoleChange']
 
     // Item features
     btns?: DialoguItemPros['btns']
@@ -34,7 +35,7 @@ interface Props {
 
 export default function({
     messages, roles, agentIcon, onComplete, onAdd, defaultDialogueInputRole, onAddAndComplete, title, isCompleting = false, models, onSelectModel, defaultModel,
-    btns
+    btns, onRoleChange
 }: Props) {
     // Ref
     const myRef = useRef<HTMLLIElement>(null)
@@ -72,7 +73,7 @@ export default function({
                 {
                     messages?.map((message, idx) => {
                         return (
-                            <li key={idx}>
+                            <li key={message.id}>
                                 <DialogueItem
                                     id={message.id}
                                     className={`px-10 py-10 ${idx % 2 == 0 && "bg-base-200"}`}
@@ -80,6 +81,7 @@ export default function({
                                     btns={btns}
                                     content={message.content}
                                     defaultRole={message.role}
+                                    onRoleChange={onRoleChange}
                                     roles={roles} />
 
                             </li>

@@ -29,3 +29,10 @@ export interface SwapTwoMessagesForAConversation {
     args: { conversationId: Conversation["id"], firstMessageId: Message["id"], secondMessageId: Message["id"] }
     return: void
 }
+
+// UpdateMessageRole Channel
+export interface UpdateMessageRole {
+    name: "update-message-role"
+    args: { messageId: Message["id"], role: Message["role"] }
+    return: void
+}

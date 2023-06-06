@@ -1,11 +1,11 @@
 import { ReactNode, useContext, useEffect, } from "react"
-import { ChevronDown, ChevronUp, Settings } from "lucide-react";
+import { ChevronDown, ChevronUp, RefreshCw, Settings, Trash } from "lucide-react";
 
 import SideBar from "../components/SideBar"
 import Dialogue from "../components/Dialogue"
 import { ROLE_ICON_MAP } from "../constants"
 import { useAppDispatch, useAppSelector } from "../store"
-import { addConversation, addMessage, deleteConversation, loadConversations, updateConversationTitle, completeMessages, listMessages, addMessageAndCompleteChat, loadAllModels, getModelForCurrentConversation, updateModelForCurrentConversation, moveMessageUpOrDown } from "../store/conversationSlice/thunks"
+import { addConversation, addMessage, deleteConversation, loadConversations, updateConversationTitle, completeMessages, listMessages, addMessageAndCompleteChat, loadAllModels, getModelForCurrentConversation, updateModelForCurrentConversation, moveMessageUpOrDown, updateMessageRole } from "../store/conversationSlice/thunks"
 import { selectChat } from "../store/conversationSlice";
 import { Conversation, Message, Role } from "../types";
 import OptionBtn from "../components/OptionBtn";
@@ -119,6 +119,12 @@ export default function() {
             messageId
         }))
     }
+    const disptachUpdateMessageRole = (messageId: Message['id'], role: string) => {
+        dispatch(updateMessageRole({
+            messageId,
+            role
+        }))
+    }
 
     // More UIs
     const sideBarOptionList = [
@@ -158,8 +164,27 @@ export default function() {
                     <ChevronDown size={16} />
                 </div >
             )
-
-        }
+        },
+        // TODO: Regenerate message
+        ({
+            id
+        }) => {
+            return (
+                <div>
+                    <RefreshCw size={15} />
+                </div>
+            )
+        },
+        // TODO: Delete message
+        ({
+            id
+        }) => {
+            return (
+                <div onClick={() => { }}>
+                    <Trash size={15} />
+                </div>
+            )
+        },
     ]
 
 
@@ -219,6 +244,9 @@ export default function() {
                             }
                             agentIcon={function({ role }: { role: string }): ReactNode {
                                 return ROLE_ICON_MAP[role as Role]
+                            }}
+                            onRoleChange={(id, role) => {
+                                disptachUpdateMessageRole(id, role)
                             }}
                             messages={messages}
                             onAdd={(message) => {

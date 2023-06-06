@@ -16,6 +16,7 @@ export interface Props {
         role: string;
         content: string;
     }) => React.ReactNode)[];
+    onRoleChange?: (id: number, role: string) => void;
 }
 
 /**
@@ -31,7 +32,7 @@ export interface Props {
  * 
  * @returns {JSX.Element} The chat dialogue component.
  */
-export default function({ agentIcon, content, roles, defaultRole, className = "", btns, id }: Props): JSX.Element {
+export default function({ agentIcon, content, roles, defaultRole, className = "", btns, id, onRoleChange = () => { } }: Props): JSX.Element {
 
     // Guards
     if (!roles || roles.length === 0) {
@@ -41,10 +42,6 @@ export default function({ agentIcon, content, roles, defaultRole, className = ""
 
     // Operate on props
     content = micromark(content)
-
-
-    // States
-    const [currentRole, setCurrentRole] = useState<string>("")
 
 
     // Animations
@@ -89,9 +86,6 @@ export default function({ agentIcon, content, roles, defaultRole, className = ""
         import("highlight.js/styles/github-dark.css")
         hljs.highlightAll()
     }, [content])
-    useEffect(() => {
-        setCurrentRole(defaultRole || roles[0])
-    }, [defaultRole])
 
     return (
         <div className={[
@@ -108,17 +102,18 @@ export default function({ agentIcon, content, roles, defaultRole, className = ""
         >
             {/* Agent Icon */}
             <animated.div style={agentIconAnimationStyles}>
-                {agentIcon({ role: currentRole })}
+                {agentIcon({ role: defaultRole || "" })}
             </animated.div>
             {/* Chat Dialogue */}
             <div className="grow flex flex-col justify-center space-y-3">
                 {/* Options */}
                 <div className="w-full flex flex-row justify-between">
                     {/* Chat role */}
-                    <select className="select select-sm border focus:outline-none bg-transparent" value={currentRole} onChange={e => {
-                        setCurrentRole(e.target.value)
+                    <select className="select select-sm border focus:outline-none bg-transparent" value={defaultRole} onChange={e => {
+                        onRoleChange(id, e.target.value)
                         animateAgentIcon()
-                    }}>
+                    }}
+                    >
                         {
                             roles.map((role) => (
                                 <option key={role} value={role}>{role}</option>
@@ -130,7 +125,7 @@ export default function({ agentIcon, content, roles, defaultRole, className = ""
                         {
                             btns?.map((btn, idx) => <div key={idx}>{btn({
                                 id: id,
-                                role: currentRole,
+                                role: defaultRole || "",
                                 content,
                             })}</div>)
                         }

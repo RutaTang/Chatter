@@ -1,4 +1,4 @@
-import { addMessage, listMessages, swapMessagesOrder } from "../../store/operations/message";
+import { addMessage, listMessages, swapMessagesOrder, updateMessasgeRole as updateMesssageRole } from "../../store/operations/message";
 import { getManifest } from "../../store/operations/settings";
 import { BUILT_IN_MODELS_PLUGINS_PATH } from "../../utils";
 import { Service, serviceEngine } from "../engine";
@@ -7,8 +7,9 @@ import type {
     AddMessage as AddMessageChannel,
     CompleteMessages as CompleteMessagesChannel,
     SwapTwoMessagesForAConversation as SwapTwoMessagesForAConversationChannel,
+    UpdateMessageRole as UpdateMessageRoleChannel,
     ChatAPI,
-    Manifest
+    Manifest,
 } from 'types'
 import fs from 'fs'
 import { parse } from "yaml";
@@ -99,4 +100,16 @@ export class SwapTwoMessagesForAConversation extends Service<SwapTwoMessagesForA
     }
 
 
+}
+
+
+@serviceEngine.handle<UpdateMessageRoleChannel>("update-message-role")
+export class UpdateMessageRole extends Service<UpdateMessageRoleChannel> {
+
+    constructor() {
+        super()
+        this.process = async (_e, { messageId, role }) => {
+            await updateMesssageRole(messageId, role)
+        }
+    }
 }

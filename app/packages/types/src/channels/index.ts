@@ -9,7 +9,8 @@ import type {
     ListMessages,
     AddMessage,
     CompleteMessages,
-    SwapTwoMessagesForAConversation
+    SwapTwoMessagesForAConversation,
+    UpdateMessageRole
 } from './message'
 export * from './message'
 import type {
@@ -37,6 +38,7 @@ export type Channel =
     AddMessage |
     CompleteMessages |
     SwapTwoMessagesForAConversation |
+    UpdateMessageRole |
     // Settings channels
     LoadSideSectionsAndItems |
     GetContentSectionsAndItems |

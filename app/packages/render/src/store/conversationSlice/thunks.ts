@@ -3,7 +3,7 @@ import { NAME } from "./constants"
 import { Conversation, Conversations, Message } from "../../types"
 import { integrateBackendConditionally } from "../../utils/integrate"
 import { RootState } from ".."
-import type { AddConversation, AddMessage, CompleteMessages, DeleteConversation, GetModelForConversation, ListAllModels, ListConversations, ListMessages, RetitleConversation, SwapTwoMessagesForAConversation, UpdateModelForConversation } from "types"
+import { UpdateMessageRole, type AddConversation, type AddMessage, type CompleteMessages, type DeleteConversation, type GetModelForConversation, type ListAllModels, type ListConversations, type ListMessages, type RetitleConversation, type SwapTwoMessagesForAConversation, type UpdateModelForConversation } from "types"
 import { invock } from "../../utils/service"
 import { Omit } from "@react-spring/web"
 
@@ -337,3 +337,25 @@ export const moveMessageUpOrDown = createAsyncThunk<
             secondMessageId: secondMessageId
         }))
     })
+
+export const updateMessageRole = createAsyncThunk<
+    void,
+    {
+        messageId: number,
+        role: string
+    },
+    {
+        state: RootState
+    }
+>(
+    `${NAME}/updateMessageRole`,
+    async ({ messageId, role }, thunkApi) => {
+        await invock<UpdateMessageRole>("update-message-role", {
+            messageId,
+            role
+        })
+        const conversation = thunkApi.getState().chat.currentChat
+        if (conversation == undefined) return
+        thunkApi.dispatch(listMessages(conversation.id))
+    }
+)
