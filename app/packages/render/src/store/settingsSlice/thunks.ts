@@ -1,13 +1,18 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { NAME } from "./constants";
 import { invock } from "../../utils/service";
-import { LoadSideSectionsAndItemsChannelArgs, LoadSideSectionsAndItemsChannel, LoadSideSectionsAndItemsChannelReturn, GetContentSectionsAndItemsChannel, GetContentSectionsAndItemsChannelArgs, GetContentSectionsAndItemsChannelReturn, UpdateContentItemValueChannel, UpdateContentItemValueChannelArgs, UpdateContentItemValueChannelReturn, GetContentItemValueChannel, GetContentItemValueChannelArgs, GetContentItemValueChannelReturn } from "types";
+import type {
+    UpdateContentItemValue,
+    LoadSideSectionsAndItems,
+    GetContentSectionsAndItems,
+    GetContentItemValue
+} from "types";
 import { RootState } from "..";
 
 export const updateContentItemValue = createAsyncThunk<
     void,
     {
-        contentItemId: string,
+        contentItemId: number,
         value: string
     },
     {
@@ -15,9 +20,8 @@ export const updateContentItemValue = createAsyncThunk<
     }
 >(
     `${NAME}/updateContentItemValue`,
-    async (payload: { contentItemId: string, value: string }, thunkAPI) => {
-        console.log(payload)
-        await invock<UpdateContentItemValueChannel, UpdateContentItemValueChannelArgs>("update-content-item-value", payload) as UpdateContentItemValueChannelReturn
+    async ({ contentItemId, value }, thunkAPI) => {
+        await invock<UpdateContentItemValue>("update-content-item-value", { contentItemId, value })
         await thunkAPI.dispatch(loadAppearanceSettings())
         await thunkAPI.dispatch(setCurrentContentSection({ sideItemId: thunkAPI.getState().settings.currentSideItemId! }))
     }
@@ -26,7 +30,7 @@ export const updateContentItemValue = createAsyncThunk<
 export const loadSideSectionsAndItems = createAsyncThunk(
     `${NAME}/loadSideSectionsAndItems`,
     async () => {
-        const r = await invock<LoadSideSectionsAndItemsChannel, LoadSideSectionsAndItemsChannelArgs>("load-side-sections-and-items", undefined) as LoadSideSectionsAndItemsChannelReturn
+        const r = await invock<LoadSideSectionsAndItems>("load-side-sections-and-items", undefined)
         return r
     }
 )
@@ -34,9 +38,9 @@ export const loadSideSectionsAndItems = createAsyncThunk(
 export const setCurrentContentSection = createAsyncThunk(
     `${NAME}/setCurrentContentSection`,
     async ({ sideItemId }: {
-        sideItemId: string
+        sideItemId: number
     }) => {
-        const r: GetContentSectionsAndItemsChannelReturn = await invock<GetContentSectionsAndItemsChannel, GetContentSectionsAndItemsChannelArgs>("get-content-sections-and-items", {
+        const r = await invock<GetContentSectionsAndItems>("get-content-sections-and-items", {
             sideItemId
         })
         return r
@@ -50,21 +54,21 @@ export const loadAppearanceSettings = createAsyncThunk(
     `${NAME}/loadAppearanceSettings`,
     async () => {
         // Theme
-        const theme: GetContentItemValueChannelReturn = await invock<GetContentItemValueChannel, GetContentItemValueChannelArgs>("get-content-item-value", {
+        const theme = await invock<GetContentItemValue>("get-content-item-value", {
             sideSectionTitle: "General",
             sideItemTitle: "Appearance",
             contentSectionTitle: "Theme",
             contentItemTitle: "Theme name",
         })
         // Font size
-        const fontSize: GetContentItemValueChannelReturn = await invock<GetContentItemValueChannel, GetContentItemValueChannelArgs>("get-content-item-value", {
+        const fontSize = await invock<GetContentItemValue>("get-content-item-value", {
             sideSectionTitle: "General",
             sideItemTitle: "Appearance",
             contentSectionTitle: "Font",
             contentItemTitle: "Font size",
         })
         // Font family
-        const fontFamily: GetContentItemValueChannelReturn = await invock<GetContentItemValueChannel, GetContentItemValueChannelArgs>("get-content-item-value", {
+        const fontFamily = await invock<GetContentItemValue>("get-content-item-value", {
             sideSectionTitle: "General",
             sideItemTitle: "Appearance",
             contentSectionTitle: "Font",

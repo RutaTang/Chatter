@@ -7,11 +7,11 @@ interface SettingsState {
     sideSectionsAndItems: {
         title: string,
         items: {
-            id: string,
+            id: number,
             title: string,
         }[]
     }[],
-    currentSideItemId?: string,
+    currentSideItemId?: number,
     currentContentSections?: SettingsContentSectionData[],
 
     // Seetings

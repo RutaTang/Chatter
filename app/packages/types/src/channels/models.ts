@@ -1,21 +1,22 @@
 // ListAllModels Channel
-export type ListAllModelsChannel = "list-all-models"
-export type ListAllModelsChannelArgs = void
-export type ListAllModelsChannelReturn = string[]
+export interface ListAllModels {
+    name: "list-all-models"
+    args: void
+    return: string[]
+}
 
 // UpdateModelForConversation Channel
-export type UpdateModelForConversationChannel = "update-model-for-conversation"
-export type UpdateModelForConversationChannelArgs = {
-    conversationId: number
-    model: string
+export interface UpdateModelForConversation {
+    name: "update-model-for-conversation"
+    args: { conversationId: number, model: string }
+    return: void
 }
-export type UpdateModelForConversationChannelReturn = void
 
 // GetModelForConversation Channel
-export type GetModelForConversationChannel = "get-model-for-conversation"
-export type GetModelForConversationChannelArgs = {
-    conversationId: number
+export interface GetModelForConversation {
+    name: "get-model-for-conversation"
+    args: { conversationId: number }
+    return: string
 }
-export type GetModelForConversationChannelReturn = string
 
 

@@ -3,7 +3,7 @@ import { NAME } from "./constants"
 import { Conversation, Conversations, Message } from "../../types"
 import { integrateBackendConditionally } from "../../utils/integrate"
 import { RootState } from ".."
-import { AddConversationChannel, AddConversationChannelArgs, AddConversationChannelReturn, AddMessageChannel, AddMessageChannelArgs, CompleteMessagesChannel, CompleteMessagesChannelArgs, CompleteMessagesChannelReturn, DeleteConversationChannel, DeleteConversationChannelArgs, GetModelForConversationChannel, GetModelForConversationChannelArgs, GetModelForConversationChannelReturn, ListAllModelsChannel, ListAllModelsChannelArgs, ListAllModelsChannelReturn, ListConversationsChannel, ListConversationsChannelArgs, ListConversationsChannelReturn, ListMessagesChannel, ListMessagesChannelArgs, RetitleConversationChannel, RetitleConversationChannelArgs, SwapTwoMessagesForAConversationChannel, SwapTwoMessagesForAConversationChannelArgs, UpdateModelForConversationChannel, UpdateModelForConversationChannelArgs } from "types"
+import type { AddConversation, AddMessage, CompleteMessages, DeleteConversation, GetModelForConversation, ListAllModels, ListConversations, ListMessages, RetitleConversation, SwapTwoMessagesForAConversation, UpdateModelForConversation } from "types"
 import { invock } from "../../utils/service"
 import { Omit } from "@react-spring/web"
 
@@ -29,7 +29,7 @@ export const loadConversations = createAsyncThunk<Conversations>(
                 return conversations
             },
             electron: async () => {
-                let conversations: ListConversationsChannelReturn = await invock<ListConversationsChannel, ListConversationsChannelArgs>("list-conversations", undefined)
+                let conversations = await invock<ListConversations>("list-conversations", undefined)
                 return conversations
             }
         })
@@ -47,7 +47,7 @@ export const addConversation = createAsyncThunk(
                 }
             },
             electron: async () => {
-                const returned: AddConversationChannelReturn = await invock<AddConversationChannel, AddConversationChannelArgs>("add-conversation", conversation)
+                const returned = await invock<AddConversation>("add-conversation", conversation)
                 return returned
             }
         })
@@ -62,7 +62,7 @@ export const deleteConversation = createAsyncThunk<Conversation['id'], Conversat
                 return chatId
             },
             electron: async () => {
-                await invock<DeleteConversationChannel, DeleteConversationChannelArgs>("delete-conversation", {
+                await invock<DeleteConversation>("delete-conversation", {
                     id: chatId
                 })
                 return chatId
@@ -88,7 +88,7 @@ export const updateConversationTitle = createAsyncThunk(
                 }
             },
             electron: async () => {
-                await invock<RetitleConversationChannel, RetitleConversationChannelArgs>("retitle-conversation", {
+                await invock<RetitleConversation>("retitle-conversation", {
                     id: chatId,
                     title: newTitle,
                 })
@@ -124,11 +124,11 @@ export const completeMessages = createAsyncThunk(
                 }
             },
             electron: async () => {
-                const message: CompleteMessagesChannelReturn = await invock<CompleteMessagesChannel, CompleteMessagesChannelArgs>("complete-messages", {
+                const message = await invock<CompleteMessages>("complete-messages", {
                     model: model,
                     messages: messages
                 })
-                await invock<AddMessageChannel, AddMessageChannelArgs>("add-message", {
+                await invock<AddMessage>("add-message", {
                     ...message,
                     conversationId: conversationId,
                 })
@@ -164,7 +164,7 @@ export const listMessages = createAsyncThunk(
                 }
             },
             electron: async () => {
-                let messages = await invock<ListMessagesChannel, ListMessagesChannelArgs>("list-messages", { conversationId: conversationId }) || []
+                let messages = await invock<ListMessages>("list-messages", { conversationId: conversationId }) || []
                 return {
                     conversationId: conversationId,
                     messages: messages
@@ -195,7 +195,7 @@ export const addMessage = createAsyncThunk<
             none: () => {
             },
             electron: async () => {
-                await invock<AddMessageChannel, AddMessageChannelArgs>("add-message", {
+                await invock<AddMessage>("add-message", {
                     conversationId: conversationId,
                     role: message.role,
                     content: message.content,
@@ -232,8 +232,7 @@ export const addMessageAndCompleteChat = createAsyncThunk<
                 return messages || []
             },
             electron: async () => {
-                const messages = await invock<ListMessagesChannel, ListMessagesChannelArgs>("list-messages", { conversationId })
-                messages?.push(message)
+                const messages = await invock<ListMessages>("list-messages", { conversationId })
                 return messages || []
             }
         })
@@ -245,7 +244,7 @@ export const addMessageAndCompleteChat = createAsyncThunk<
 export const loadAllModels = createAsyncThunk<string[]>(
     `${NAME}/loadAllModels`,
     async () => {
-        const models: ListAllModelsChannelReturn = await invock<ListAllModelsChannel, ListAllModelsChannelArgs>("list-all-models", undefined)
+        const models = await invock<ListAllModels>("list-all-models", undefined)
         return models
     }
 )
@@ -253,7 +252,7 @@ export const loadAllModels = createAsyncThunk<string[]>(
 export const getModelForCurrentConversation = createAsyncThunk(
     `${NAME}/getModelForCurrentConversation`,
     async (conversationId: Conversation['id']) => {
-        const model: GetModelForConversationChannelReturn = await invock<GetModelForConversationChannel, GetModelForConversationChannelArgs>("get-model-for-conversation", { conversationId })
+        const model = await invock<GetModelForConversation>("get-model-for-conversation", { conversationId })
         return {
             conversationId,
             model
@@ -269,7 +268,7 @@ export const updateModelForCurrentConversation = createAsyncThunk(
         conversationId: Conversation['id'],
         model: string
     }) => {
-        await invock<UpdateModelForConversationChannel, UpdateModelForConversationChannelArgs>("update-model-for-conversation", {
+        await invock<UpdateModelForConversation>("update-model-for-conversation", {
             conversationId,
             model
         })
@@ -295,7 +294,7 @@ export const swapTwoMessagesForCurrentConversation = createAsyncThunk<
     async ({
         conversationId, firstMessageId, secondMessageId
     }, thunkApi) => {
-        await invock<SwapTwoMessagesForAConversationChannel, SwapTwoMessagesForAConversationChannelArgs>("swap-two-messages-for-a-conversation", {
+        await invock<SwapTwoMessagesForAConversation>("swap-two-messages-for-a-conversation", {
             conversationId,
             firstMessageId,
             secondMessageId

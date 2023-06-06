@@ -3,21 +3,29 @@ import type { Conversation, Message, Messages } from "../general"
 
 
 // ListMessages Channel
-export type ListMessagesChannel = "list-messages"
-export type ListMessagesChannelArgs = { conversationId: Conversation["id"] }
-export type ListMessagesChannelReturn = Messages
+export interface ListMessages {
+    name: "list-messages"
+    args: { conversationId: Conversation["id"] }
+    return: Messages
+}
 
 // AddMessage Channel
-export type AddMessageChannel = "add-message"
-export type AddMessageChannelArgs = Pick<Message, "role" | "content"> & { conversationId: number }
-export type AddMessageChannelReturn = void
+export interface AddMessage {
+    name: "add-message"
+    args: Pick<Message, "role" | "content"> & { conversationId: Conversation["id"] }
+    return: void
+}
 
 // CompleteMessages Channel
-export type CompleteMessagesChannel = "complete-messages"
-export type CompleteMessagesChannelArgs = { model: string, messages: Omit<Message, "id">[] }
-export type CompleteMessagesChannelReturn = Message
+export interface CompleteMessages {
+    name: "complete-messages"
+    args: { model: string, messages: Omit<Message, "id">[] }
+    return: Message
+}
 
 // SwapTwoMessagesForAConversation Channel
-export type SwapTwoMessagesForAConversationChannel = "swap-two-messages-for-a-conversation"
-export type SwapTwoMessagesForAConversationChannelArgs = { conversationId: number, firstMessageId: number, secondMessageId: number }
-export type SwapTwoMessagesForAConversationChannelReturn = void
+export interface SwapTwoMessagesForAConversation {
+    name: "swap-two-messages-for-a-conversation"
+    args: { conversationId: Conversation["id"], firstMessageId: Message["id"], secondMessageId: Message["id"] }
+    return: void
+}

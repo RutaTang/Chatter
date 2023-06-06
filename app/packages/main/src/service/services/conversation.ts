@@ -1,46 +1,60 @@
 import { addConversation, deleteConversation, listConversations, retitleConversation } from "../../store/operations/conversation";
 import { serviceEngine, Service } from "../engine";
-
-import type { ListConversationsChannel, ListConversationsChannelReturn, AddConversationChannel, AddConversationChannelArgs, AddConversationChannelReturn, RetitleConversationChannel, RetitleConversationChannelReturn, RetitleConversationChannelArgs, DeleteConversationChannel, DeleteConversationChannelReturn, DeleteConversationChannelArgs } from 'types'
+import type {
+    ListConversations as ListConversationsChannel,
+    AddConversation as AddConversationChannel,
+    RetitleConversation as RetitleConversationChannel,
+    DeleteConversation as DeleteConversationChannel,
+} from 'types'
 
 @serviceEngine.handle<ListConversationsChannel>("list-conversations")
-export class ListConversations extends Service {
+export class ListConversations extends Service<ListConversationsChannel> {
 
-    async process(): Promise<ListConversationsChannelReturn> {
-        const conversations = await listConversations()
-        return conversations.map(conversation => ({
-            id: conversation.id,
-            title: conversation.title,
-            createdAt: conversation.createdAt,
-            updatedAt: conversation.updatedAt,
-        }))
+    constructor() {
+        super()
+        this.process = async () => {
+            const conversations = await listConversations()
+            return conversations.map(conversation => ({
+                id: conversation.id,
+                title: conversation.title,
+                createdAt: conversation.createdAt,
+                updatedAt: conversation.updatedAt,
+            }))
+        }
     }
 
 }
 
 @serviceEngine.handle<AddConversationChannel>("add-conversation")
-export class AddConversation extends Service {
-
-    async process(_: any, { title, description }: AddConversationChannelArgs): Promise<AddConversationChannelReturn> {
-        return await addConversation(title, description)
+export class AddConversation extends Service<AddConversationChannel> {
+    constructor() {
+        super()
+        this.process = async (_e, args) => {
+            return addConversation(args.title)
+        }
     }
-
 }
 
 @serviceEngine.handle<RetitleConversationChannel>("retitle-conversation")
-export class RetitleConversation extends Service {
+export class RetitleConversation extends Service<RetitleConversationChannel>{
 
-    async process(_: any, { id, title }: RetitleConversationChannelArgs): Promise<RetitleConversationChannelReturn> {
-        await retitleConversation(id, title)
+    constructor() {
+        super()
+        this.process = async (_e, { title, id }) => {
+            await retitleConversation(id, title)
+        }
     }
 
 }
 
 @serviceEngine.handle<DeleteConversationChannel>("delete-conversation")
-export class DeleteConversation extends Service {
+export class DeleteConversation extends Service<DeleteConversationChannel> {
 
-    async process(_: any, { id }: DeleteConversationChannelArgs): Promise<DeleteConversationChannelReturn> {
-        await deleteConversation(id)
+    constructor() {
+        super()
+        this.process = async (_e, { id }) => {
+            await deleteConversation(id)
+        }
     }
 
 }

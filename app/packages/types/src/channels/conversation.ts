@@ -2,22 +2,29 @@ import type { Conversation, Conversations } from "../general"
 
 
 // ListConversations Channel
-export type ListConversationsChannel = "list-conversations"
-export type ListConversationsChannelArgs = void
-export type ListConversationsChannelReturn = Conversations
-
+export interface ListConversations {
+    name: "list-conversations"
+    args: void
+    return: Conversations
+}
 
 // AddConversation Channel
-export type AddConversationChannel = "add-conversation"
-export type AddConversationChannelArgs = Pick<Conversation, "title" | "description">
-export type AddConversationChannelReturn = Conversation
+export interface AddConversation {
+    name: "add-conversation"
+    args: Pick<Conversation, "title" | "description">
+    return: Conversation
+}
 
 // RetitleConversation Channel
-export type RetitleConversationChannel = "retitle-conversation"
-export type RetitleConversationChannelArgs = Pick<Conversation, "id" | "title">
-export type RetitleConversationChannelReturn = void
+export interface RetitleConversation {
+    name: "retitle-conversation"
+    args: Pick<Conversation, "id" | "title">
+    return: void
+}
 
 // DeleteConversation Channel
-export type DeleteConversationChannel = "delete-conversation"
-export type DeleteConversationChannelArgs = Pick<Conversation, "id">
-export type DeleteConversationChannelReturn = void
+export interface DeleteConversation {
+    name: "delete-conversation"
+    args: Pick<Conversation, "id">
+    return: void
+}

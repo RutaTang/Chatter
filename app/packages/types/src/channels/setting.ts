@@ -1,21 +1,29 @@
 import type { SettingContent, SettingSide } from "../general"
 
 // LoadSideSectionsAndItems Channel
-export type LoadSideSectionsAndItemsChannel = "load-side-sections-and-items"
-export type LoadSideSectionsAndItemsChannelArgs = void
-export type LoadSideSectionsAndItemsChannelReturn = SettingSide
+export interface LoadSideSectionsAndItems {
+    name: "load-side-sections-and-items"
+    args: void
+    return: SettingSide
+}
 
 // GetContentSectionsAndItems Channel
-export type GetContentSectionsAndItemsChannel = "get-content-sections-and-items"
-export type GetContentSectionsAndItemsChannelArgs = { sideItemId: number }
-export type GetContentSectionsAndItemsChannelReturn = SettingContent
+export interface GetContentSectionsAndItems {
+    name: "get-content-sections-and-items"
+    args: { sideItemId: number }
+    return: SettingContent
+}
 
 // UpdateContentItemValue Channel
-export type UpdateContentItemValueChannel = "update-content-item-value"
-export type UpdateContentItemValueChannelArgs = { contentItemId: number, value: string }
-export type UpdateContentItemValueChannelReturn = void
+export interface UpdateContentItemValue {
+    name: "update-content-item-value"
+    args: { contentItemId: number, value: string }
+    return: void
+}
 
 // GetContentItemValue Channel
-export type GetContentItemValueChannel = "get-content-item-value"
-export type GetContentItemValueChannelArgs = { sideSectionTitle: string, sideItemTitle: string, contentSectionTitle: string, contentItemTitle: string }
-export type GetContentItemValueChannelReturn = string
+export interface GetContentItemValue {
+    name: "get-content-item-value"
+    args: { sideSectionTitle: string, sideItemTitle: string, contentSectionTitle: string, contentItemTitle: string }
+    return: string
+}

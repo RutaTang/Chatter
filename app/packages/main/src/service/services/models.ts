@@ -1,33 +1,47 @@
 import { getConversation, updateConversation } from "../../store/operations/conversation";
 import { listAllModels } from "../../store/operations/settings";
 import { Service, serviceEngine } from "../engine";
-import type { GetModelForConversationChannel, GetModelForConversationChannelArgs, GetModelForConversationChannelReturn, ListAllModelsChannel, ListAllModelsChannelReturn, UpdateModelForConversationChannel, UpdateModelForConversationChannelArgs, UpdateModelForConversationChannelReturn } from 'types'
+import type {
+    ListAllModels as ListAllModelsChannel,
+    GetModelForConversation as GetModelForConversationChannel,
+    UpdateModelForConversation as UpdateModelForConversationChannel,
+} from 'types'
 
 
 @serviceEngine.handle<ListAllModelsChannel>("list-all-models")
-export class ListAllModels extends Service {
+export class ListAllModels extends Service<ListAllModelsChannel> {
 
-    async process(): Promise<ListAllModelsChannelReturn> {
-        return await listAllModels()
+    constructor() {
+        super()
+        this.process = async () => {
+            const models = await listAllModels()
+            return models
+        }
     }
-
 }
 
 @serviceEngine.handle<GetModelForConversationChannel>("get-model-for-conversation")
-export class GetModelForConversation extends Service {
+export class GetModelForConversation extends Service<GetModelForConversationChannel> {
 
-    async process(_: any, { conversationId }: GetModelForConversationChannelArgs): Promise<GetModelForConversationChannelReturn> {
-        return (await getConversation(conversationId)).model
+    constructor() {
+        super()
+        this.process = async (_: any, { conversationId }) => {
+            return (await getConversation(conversationId)).model
+        }
     }
+
 }
 
 @serviceEngine.handle<UpdateModelForConversationChannel>("update-model-for-conversation")
-export class UpdateModelForConversation extends Service {
+export class UpdateModelForConversation extends Service<UpdateModelForConversationChannel> {
 
-    async process(_: any, { conversationId, model }: UpdateModelForConversationChannelArgs): Promise<UpdateModelForConversationChannelReturn> {
-        const conversation = await getConversation(conversationId)
-        conversation.model = model
-        updateConversation(conversation)
+    constructor() {
+        super()
+        this.process = async (_: any, { conversationId, model }) => {
+            const conversation = await getConversation(conversationId)
+            conversation.model = model
+            updateConversation(conversation)
+        }
     }
 
 }
