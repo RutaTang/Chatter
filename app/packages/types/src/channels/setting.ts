@@ -7,12 +7,12 @@ export type LoadSideSectionsAndItemsChannelReturn = SettingSide
 
 // GetContentSectionsAndItems Channel
 export type GetContentSectionsAndItemsChannel = "get-content-sections-and-items"
-export type GetContentSectionsAndItemsChannelArgs = { sideItemId: string }
+export type GetContentSectionsAndItemsChannelArgs = { sideItemId: number }
 export type GetContentSectionsAndItemsChannelReturn = SettingContent
 
 // UpdateContentItemValue Channel
 export type UpdateContentItemValueChannel = "update-content-item-value"
-export type UpdateContentItemValueChannelArgs = { contentItemId: string, value: string }
+export type UpdateContentItemValueChannelArgs = { contentItemId: number, value: string }
 export type UpdateContentItemValueChannelReturn = void
 
 // GetContentItemValue Channel

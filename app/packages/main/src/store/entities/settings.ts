@@ -2,11 +2,14 @@ import { Column, Entity, Index, ManyToOne, OneToMany, PrimaryGeneratedColumn } f
 
 @Entity()
 export class SettingSideSection {
-    @PrimaryGeneratedColumn()
-    id!: string;
+    @PrimaryGeneratedColumn({
+        type: "integer"
+    })
+    id!: number;
 
     @Column({
         unique: true,
+        type: "text",
     })
     title!: string;
 
@@ -19,10 +22,14 @@ export class SettingSideSection {
 @Entity()
 @Index(["section", "title"], { unique: true })
 export class SettingSideSectionItem {
-    @PrimaryGeneratedColumn()
-    id!: string;
+    @PrimaryGeneratedColumn({
+        type: "integer"
+    })
+    id!: number;
 
-    @Column()
+    @Column({
+        type: "text",
+    })
     title!: string;
 
     @ManyToOne(() => SettingSideSection, (section) => section.items, {
@@ -40,10 +47,14 @@ export class SettingSideSectionItem {
 @Entity()
 @Index(["sideSectionItem", "title"], { unique: true })
 export class SettingContentSection {
-    @PrimaryGeneratedColumn()
-    id!: string;
+    @PrimaryGeneratedColumn({
+        type: "integer"
+    })
+    id!: number;
 
-    @Column()
+    @Column({
+        type: "text",
+    })
     title!: string;
 
     @OneToMany(() => SettingContentSectionItem, (item) => item.section, {
@@ -61,19 +72,25 @@ export class SettingContentSection {
 @Entity()
 @Index(["section", "title"], { unique: true })
 export class SettingContentSectionItem {
-    @PrimaryGeneratedColumn()
-    id!: string;
+    @PrimaryGeneratedColumn({
+        type: "integer"
+    })
+    id!: number;
 
-    @Column()
+    @Column({
+        type: "text",
+    })
     title!: string;
 
     @Column({
         default: "",
+        type: "text",
     })
     description!: string;
 
     @Column({
         default: "",
+        type: "text",
     })
     value!: string;
 

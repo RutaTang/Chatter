@@ -1,5 +1,5 @@
 export type Message = {
-    id: string;
+    id: number;
     role: string;
     content: string;
 }
@@ -7,7 +7,7 @@ export type Message = {
 export type Messages = Message[]
 
 export type Conversation = {
-    id: string;
+    id: number;
     title: string;
     description?: string;
     createdAt: number;
@@ -19,7 +19,7 @@ export type Conversations = Conversation[]
 export type SettingSide = {
     title: string
     items: {
-        id: string
+        id: number
         title: string
     }[]
 }[]
@@ -27,7 +27,7 @@ export type SettingSide = {
 export type SettingContent = {
     title: string
     items: {
-        id: string,
+        id: number,
         title: string
         description?: string
         value?: string

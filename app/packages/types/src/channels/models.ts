@@ -6,7 +6,7 @@ export type ListAllModelsChannelReturn = string[]
 // UpdateModelForConversation Channel
 export type UpdateModelForConversationChannel = "update-model-for-conversation"
 export type UpdateModelForConversationChannelArgs = {
-    conversationId: string
+    conversationId: number
     model: string
 }
 export type UpdateModelForConversationChannelReturn = void
@@ -14,7 +14,7 @@ export type UpdateModelForConversationChannelReturn = void
 // GetModelForConversation Channel
 export type GetModelForConversationChannel = "get-model-for-conversation"
 export type GetModelForConversationChannelArgs = {
-    conversationId: string
+    conversationId: number
 }
 export type GetModelForConversationChannelReturn = string
 

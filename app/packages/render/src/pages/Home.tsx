@@ -5,7 +5,7 @@ import SideBar from "../components/SideBar"
 import Dialogue from "../components/Dialogue"
 import { ROLE_ICON_MAP } from "../constants"
 import { useAppDispatch, useAppSelector } from "../store"
-import { addConversation, addMessage, deleteConversation, loadConversations, updateConversationTitle, completeMessages, listMessages, addMessageAndCompleteChat, loadAllModels, getModelForCurrentConversation, updateModelForCurrentConversation, swapTwoMessagesForCurrentConversation, moveMessageUpOrDown } from "../store/conversationSlice/thunks"
+import { addConversation, addMessage, deleteConversation, loadConversations, updateConversationTitle, completeMessages, listMessages, addMessageAndCompleteChat, loadAllModels, getModelForCurrentConversation, updateModelForCurrentConversation, moveMessageUpOrDown } from "../store/conversationSlice/thunks"
 import { selectChat } from "../store/conversationSlice";
 import { Conversation, Message, Role } from "../types";
 import OptionBtn from "../components/OptionBtn";

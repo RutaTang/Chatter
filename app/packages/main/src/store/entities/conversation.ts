@@ -3,32 +3,38 @@ import { Message } from "./message";
 
 @Entity()
 export class Conversation {
-    @PrimaryGeneratedColumn()
-    id!: string;
+    @PrimaryGeneratedColumn({
+        type: "integer"
+    })
+    id!: number;
 
-    @Column()
+    @Column({
+        type: "text",
+    })
     title!: string;
 
     @Column({
-        nullable: true
+        nullable: true,
+        type: "text",
     })
     description?: string;
 
     @Column({
-        type: "datetime",
+        type: "numeric",
         default: new Date().getTime()
     })
     createdAt!: number;
 
     @Column({
-        type: "datetime",
+        type: "numeric",
         default: new Date().getTime()
     })
     updatedAt!: number;
 
     // Model used to generate messages
     @Column({
-        default: ""
+        default: "",
+        type: "text"
     })
     model!: string;
 

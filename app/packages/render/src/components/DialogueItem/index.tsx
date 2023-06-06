@@ -6,13 +6,13 @@ import { useState, useEffect } from "react";
 
 export interface Props {
     agentIcon: ({ role }: { role: string }) => React.ReactNode;
-    id: string;
+    id: number;
     content: string;
     roles: string[];
     defaultRole?: string;
     className?: string;
     btns?: ((message: {
-        id: string;
+        id: number;
         role: string;
         content: string;
     }) => React.ReactNode)[];

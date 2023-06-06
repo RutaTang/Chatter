@@ -3,18 +3,25 @@ import { Conversation } from "./conversation";
 
 @Entity()
 export class Message {
-    @PrimaryGeneratedColumn()
-    id!: string;
+    @PrimaryGeneratedColumn({
+        type: "integer"
+    })
+    id!: number;
 
-    @Column()
+    @Column({
+        type: "text",
+    })
     role!: string;
 
-    @Column()
+    @Column({
+        type: "text",
+    })
     content!: string;
 
     // Order the messages in a conversation, default to -1 means the message is not ordered
     @Column({
-        default: -1
+        default: -1,
+        type: "integer"
     })
     order!: number;
 

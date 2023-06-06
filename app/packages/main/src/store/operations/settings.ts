@@ -187,7 +187,7 @@ export async function loadSideSectionsAndItems() {
     return sideSectionsAndItems
 }
 
-export async function getContentSectionsAndItems(sideItemId: string) {
+export async function getContentSectionsAndItems(sideItemId: number) {
     const contentSectionsAndItems = await AppDataSource.getRepository(SettingContentSection).find({
         relations: {
             items: true
@@ -201,7 +201,7 @@ export async function getContentSectionsAndItems(sideItemId: string) {
     return contentSectionsAndItems
 }
 
-export async function updateContentSectionItemValue(contentItemId: string, value: string) {
+export async function updateContentSectionItemValue(contentItemId: number, value: string) {
     const contentSectionItem = await AppDataSource.getRepository(SettingContentSectionItem).findOneOrFail({
         where: {
             id: contentItemId

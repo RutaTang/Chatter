@@ -14,13 +14,13 @@ export const loadConversations = createAsyncThunk<Conversations>(
             none: () => {
                 let conversations = [
                     {
-                        id: "1",
+                        id: 1,
                         title: "Chat 1",
                         updatedAt: new Date().getTime(),
                         createdAt: new Date().getTime(),
                     },
                     {
-                        id: "2",
+                        id: 2,
                         title: "Chat 2",
                         updatedAt: new Date().getTime(),
                         createdAt: new Date().getTime(),
@@ -43,7 +43,7 @@ export const addConversation = createAsyncThunk(
             none: () => {
                 return {
                     ...conversation,
-                    id: "1"
+                    id: 1
                 }
             },
             electron: async () => {
@@ -117,7 +117,7 @@ export const completeMessages = createAsyncThunk(
                 return {
                     id: conversationId,
                     message: {
-                        id: "1",
+                        id: 1,
                         role: "assistant",
                         content: "This is a test message",
                     }
@@ -148,12 +148,12 @@ export const listMessages = createAsyncThunk(
             none: () => {
                 let messages: Message[] = [
                     {
-                        id: "1",
+                        id: 1,
                         role: "user",
                         content: "This is a test message",
                     },
                     {
-                        id: "2",
+                        id: 2,
                         role: "assistant",
                         content: "This is a test message",
                     }
@@ -226,7 +226,7 @@ export const addMessageAndCompleteChat = createAsyncThunk<
             none: () => {
                 const messages = thunkAPI.getState().chat.currentChatMessages
                 messages?.push({
-                    id: "1",
+                    id: 1,
                     ...message
                 })
                 return messages || []
@@ -283,9 +283,9 @@ export const updateModelForCurrentConversation = createAsyncThunk(
 export const swapTwoMessagesForCurrentConversation = createAsyncThunk<
     void,
     {
-        conversationId: string,
-        firstMessageId: string,
-        secondMessageId: string,
+        conversationId: number,
+        firstMessageId: number,
+        secondMessageId: number,
     },
     {
         state: RootState
@@ -307,8 +307,8 @@ export const swapTwoMessagesForCurrentConversation = createAsyncThunk<
 export const moveMessageUpOrDown = createAsyncThunk<
     void,
     {
-        conversationId: string,
-        messageId: string,
+        conversationId: number,
+        messageId: number,
         direction: "up" | "down"
     },
     {

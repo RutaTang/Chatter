@@ -9,7 +9,7 @@ export type ListMessagesChannelReturn = Messages
 
 // AddMessage Channel
 export type AddMessageChannel = "add-message"
-export type AddMessageChannelArgs = Pick<Message, "role" | "content"> & { conversationId: string }
+export type AddMessageChannelArgs = Pick<Message, "role" | "content"> & { conversationId: number }
 export type AddMessageChannelReturn = void
 
 // CompleteMessages Channel
@@ -19,5 +19,5 @@ export type CompleteMessagesChannelReturn = Message
 
 // SwapTwoMessagesForAConversation Channel
 export type SwapTwoMessagesForAConversationChannel = "swap-two-messages-for-a-conversation"
-export type SwapTwoMessagesForAConversationChannelArgs = { conversationId: string, firstMessageId: string, secondMessageId: string }
+export type SwapTwoMessagesForAConversationChannelArgs = { conversationId: number, firstMessageId: number, secondMessageId: number }
 export type SwapTwoMessagesForAConversationChannelReturn = void

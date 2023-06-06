@@ -77,7 +77,6 @@ export class CompleteMessages extends Service {
 export class SwapTwoMessagesForAConversation extends Service {
 
     async process(_: any, { conversationId, firstMessageId, secondMessageId }: SwapTwoMessagesForAConversationChannelArgs): Promise<SwapTwoMessagesForAConversationChannelReturn> {
-        console.log(conversationId, firstMessageId, secondMessageId)
         await swapMessagesOrder(conversationId, firstMessageId, secondMessageId)
     }
 

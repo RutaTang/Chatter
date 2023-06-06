@@ -2,7 +2,7 @@ import { AppDataSource } from "../data-source";
 import { Conversation } from "../entities/conversation";
 import { Message } from "../entities/message";
 
-export async function listMessages(conversationId: string) {
+export async function listMessages(conversationId: number) {
     const conversation = await AppDataSource.manager.findOneOrFail(Conversation, {
         where: {
             id: conversationId
@@ -27,7 +27,7 @@ export async function listMessages(conversationId: string) {
     return sort(conversation.messages || [])
 }
 
-export async function addMessage(conversationId: string, role: string, content: string) {
+export async function addMessage(conversationId: number, role: string, content: string) {
     const conversation = await AppDataSource.getRepository(Conversation).findOneOrFail({
         where: {
             id: conversationId
@@ -43,7 +43,7 @@ export async function addMessage(conversationId: string, role: string, content: 
     await AppDataSource.getRepository(Message).save(message)
 }
 
-export async function swapMessagesOrder(conversationId: string, firstMessageId: string, secondMessageId: string) {
+export async function swapMessagesOrder(conversationId: number, firstMessageId: number, secondMessageId: number) {
     const conversation = await AppDataSource.getRepository(Conversation).findOneOrFail({
         where: {
             id: conversationId
@@ -57,7 +57,7 @@ export async function swapMessagesOrder(conversationId: string, firstMessageId: 
     if (firstMessage && secondMessage) {
         // If any one's order is -1, assign their id to the other one's order 
         if (firstMessage.order === -1 || secondMessage.order === -1) {
-            [firstMessage.order, secondMessage.order] = [parseInt(secondMessage.id), parseInt(firstMessage.id)]
+            [firstMessage.order, secondMessage.order] = [secondMessage.id, firstMessage.id]
         } else {
             [firstMessage.order, secondMessage.order] = [secondMessage.order, firstMessage.order]
         }

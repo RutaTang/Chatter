@@ -16,7 +16,7 @@ export async function addConversation(title: string, description?: string) {
     return conversation
 }
 
-export async function retitleConversation(id: string, title: string) {
+export async function retitleConversation(id: number, title: string) {
     const conversation = await AppDataSource.getRepository(Conversation).findOneOrFail({
         where: {
             id: id
@@ -26,7 +26,7 @@ export async function retitleConversation(id: string, title: string) {
     await AppDataSource.getRepository(Conversation).save(conversation);
 }
 
-export async function deleteConversation(id: string) {
+export async function deleteConversation(id: number) {
     const conversation = await AppDataSource.getRepository(Conversation).findOneOrFail({
         where: {
             id: id
@@ -35,7 +35,7 @@ export async function deleteConversation(id: string) {
     await AppDataSource.getRepository(Conversation).remove(conversation);
 }
 
-export async function getConversation(id: string) {
+export async function getConversation(id: number) {
     return await AppDataSource.getRepository(Conversation).findOneOrFail({
         where: {
             id: id
