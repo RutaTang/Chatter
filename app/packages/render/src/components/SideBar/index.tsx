@@ -1,3 +1,4 @@
+import { ReactNode } from "react";
 import ChatItem from "../ChatItem";
 import NewChatButton from "../NewChatBtn";
 
@@ -9,7 +10,7 @@ interface RequiredID {
 interface Props<T extends Required<RequiredID>> {
     chatList?: T[]
     defaultSelectedChat?: T
-    optionList?: React.ReactNode[]
+    optionList?: ReactNode[]
     onNewChat?: () => void
     onSelectChat?: (chat: T) => void
     onDeleteChat?: (chat: T) => void

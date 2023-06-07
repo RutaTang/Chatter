@@ -1,8 +1,8 @@
 import { useSpring, animated, config } from "@react-spring/web"
-import { useEffect, useState } from "react"
+import { ReactNode, useEffect, useState } from "react"
 
 interface Props {
-    children?: React.ReactNode
+    children?: ReactNode
     show?: boolean
     hide?: () => void
 }

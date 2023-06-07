@@ -1,7 +1,9 @@
+import { ReactNode } from "react";
+
 interface Props {
     title: string;
-    leftIcon: React.ReactNode;
-    rightIcon?: React.ReactNode;
+    leftIcon: ReactNode;
+    rightIcon?: ReactNode;
     className?: string;
 }
 

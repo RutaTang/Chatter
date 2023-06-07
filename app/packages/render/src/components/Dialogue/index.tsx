@@ -4,7 +4,6 @@ import DialogueItem from "../DialogueItem";
 import DialogueInput from "../DialogueInput";
 import InCompleting from "../InCompleting";
 import DialogueHead from "../DialogueHead";
-import { Message } from "../../types";
 
 import type { Props as DialoguItemPros } from '../DialogueItem';
 import type { Message as DialogueInputMessage } from '../DialogueInput'
@@ -15,7 +14,11 @@ interface Props {
     roles: string[]
     agentIcon: ({ role }: { role: string; }) => ReactNode
     defaultDialogueInputRole?: string
-    messages?: Message[]
+    messages?: {
+        id: any
+        role: string
+        content: string
+    }[]
     onRoleChange?: DialoguItemPros['onRoleChange']
 
     // Item features

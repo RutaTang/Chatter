@@ -1,8 +1,15 @@
-import { SettingsContentSectionData } from "../../types";
 import SettingsItem from "../SettingsItem";
 
 interface Props {
-    sections?: SettingsContentSectionData[]
+    sections?: {
+        title: string
+        items?: {
+            id: any
+            title: string
+            description?: string
+            value: any
+        }[]
+    }[]
     onActionValueChange?: (contentItemId: any, value: any) => void
 }
 
