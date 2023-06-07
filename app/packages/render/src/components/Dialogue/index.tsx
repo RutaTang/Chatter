@@ -7,6 +7,7 @@ import DialogueHead from "../DialogueHead";
 
 import type { Props as DialoguItemPros } from '../DialogueItem';
 import type { Message as DialogueInputMessage } from '../DialogueInput'
+import DelayToShow from "../DelayToShow";
 
 
 interface Props {
@@ -40,8 +41,10 @@ export default function({
     messages, roles, agentIcon, onComplete, onAdd, defaultDialogueInputRole, onAddAndComplete, title, isCompleting = false, models, onSelectModel, defaultModel,
     btns, onRoleChange
 }: Props) {
+
+
     // Ref
-    const myRef = useRef<HTMLLIElement>(null)
+    const myRef = useRef<HTMLDivElement>(null)
 
     // Scroll to bottom
     const scrollToBottom = () => {
@@ -91,36 +94,38 @@ export default function({
                         )
                     })
                 }
-                {/* Loading */}
-                {
-                    isCompleting && (
-                        <li className="bg-base-200 px-10 py-10 opacity-30">
-                            <InCompleting />
-                        </li>
-                    )
-                }
-                {/* Input */}
-                <li className={`${messages && messages.length > 0 && "border-t"}`} ref={myRef}>
-                    <DialogueInput
-                        defaultRole={defaultDialogueInputRole}
-                        agentIcon={agentIcon}
-                        roles={roles}
-                        className={`px-10 py-10`}
-                        onComplete={(message) => {
-                            onComplete && onComplete(message)
-                            scrollToBottom()
-                        }}
-                        onAdd={(message) => {
-                            onAdd && onAdd(message)
-                            scrollToBottom()
-                        }}
-                        onAddAndComplete={(message) => {
-                            onAddAndComplete && onAddAndComplete(message)
-                            scrollToBottom()
-                        }}
-                    />
-                </li>
             </ul>
+            {/* Loading */}
+            {
+                isCompleting && (
+                    <DelayToShow delay={200}>
+                        <div className="bg-base-200 px-10 py-10 opacity-30">
+                            <InCompleting />
+                        </div>
+                    </DelayToShow>
+                )
+            }
+            {/* Input */}
+            <div className={`${messages && messages.length > 0 && "border-t"}`} ref={myRef}>
+                <DialogueInput
+                    defaultRole={defaultDialogueInputRole}
+                    agentIcon={agentIcon}
+                    roles={roles}
+                    className={`px-10 py-10`}
+                    onComplete={(message) => {
+                        onComplete && onComplete(message)
+                        scrollToBottom()
+                    }}
+                    onAdd={(message) => {
+                        onAdd && onAdd(message)
+                        scrollToBottom()
+                    }}
+                    onAddAndComplete={(message) => {
+                        onAddAndComplete && onAddAndComplete(message)
+                        scrollToBottom()
+                    }}
+                />
+            </div>
         </div >
     )
 }

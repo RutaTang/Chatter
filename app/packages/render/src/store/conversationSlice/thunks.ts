@@ -101,41 +101,37 @@ export const updateConversationTitle = createAsyncThunk(
     }
 )
 
-export const completeMessages = createAsyncThunk(
+export const completeMessages = createAsyncThunk<
+    void,
+    {
+        conversationId: Conversation['id'],
+        messages: Message[],
+        model: string
+    },
+
+    {
+        state: RootState
+    }
+>(
     `${NAME}/completeChat`,
     async ({
         conversationId,
         messages,
         model
-    }: {
-        conversationId: Conversation['id'],
-        messages: Message[],
-        model: string
-    }) => {
-        return await integrateBackendConditionally<{ id: Conversation['id'], message: Message }>({
+    }, thunkApi) => {
+        return await integrateBackendConditionally({
             none: () => {
-                return {
-                    id: conversationId,
-                    message: {
-                        id: 1,
-                        role: "assistant",
-                        content: "This is a test message",
-                    }
-                }
             },
             electron: async () => {
                 const message = await invock<CompleteMessages>("complete-messages", {
                     model: model,
                     messages: messages
                 })
-                await invock<AddMessage>("add-message", {
-                    ...message,
-                    conversationId: conversationId,
-                })
-                return {
-                    id: conversationId,
-                    message: message
-                }
+
+                await thunkApi.dispatch(addMessage({
+                    conversationId,
+                    message
+                }))
             }
         })
     }
@@ -354,8 +350,8 @@ export const updateMessageRole = createAsyncThunk<
             messageId,
             role
         })
-        const conversation = thunkApi.getState().chat.currentChat
-        if (conversation == undefined) return
-        thunkApi.dispatch(listMessages(conversation.id))
+        const id = thunkApi.getState().chat.currentChatId
+        if (id == undefined) return
+        thunkApi.dispatch(listMessages(id))
     }
 )

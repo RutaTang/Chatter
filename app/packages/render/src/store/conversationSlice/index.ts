@@ -10,13 +10,10 @@ interface ConversationState {
     chats: Conversations
 
     // Current chat
-    currentChat?: Conversation
+    currentChatId?: Conversation['id']
 
     // Current chat messages
     currentChatMessages?: Message[]
-
-    // Does the model is completing a request
-    isCompleting: boolean
 
     // All available models 
     models: string[]
@@ -28,7 +25,6 @@ interface ConversationState {
 const initialState: ConversationState = {
     chats: [],
     currentChatMessages: [],
-    isCompleting: false,
     models: []
 }
 
@@ -36,10 +32,8 @@ export const conversationSlice = createSlice({
     name: NAME,
     initialState,
     reducers: {
-        selectChat: (state, action) => {
-            state.currentChat = state.chats.find((chat) => {
-                return chat.id === action.payload
-            })
+        selectChat: (state, action: { payload: number }) => {
+            state.currentChatId = action.payload
         }
     },
     extraReducers: (builder) => {
@@ -50,13 +44,13 @@ export const conversationSlice = createSlice({
             })
             .addCase(addConversation.fulfilled, (state, action) => {
                 state.chats.unshift(action.payload)
-                state.currentChat = action.payload
+                state.currentChatId = action.payload.id
             })
             .addCase(deleteConversation.fulfilled, (state, action) => {
                 state.chats = state.chats.filter((chat) => {
                     return chat.id !== action.payload
                 })
-                state.currentChat = undefined
+                state.currentChatId = undefined
             })
             .addCase(updateConversationTitle.fulfilled, (state, action) => {
                 state.chats.forEach(element => {
@@ -64,37 +58,51 @@ export const conversationSlice = createSlice({
                         element.title = action.payload.title
                     }
                 });
-                if (state.currentChat?.id === action.payload.id) {
-                    state.currentChat.title = action.payload.title
+                if (state.currentChatId && state.currentChatId === action.payload.id) {
+                    state.chats[state.currentChatId].title = action.payload.title
                 }
             })
-            .addCase(completeMessages.pending, (state) => {
-                state.isCompleting = true
+            .addCase(completeMessages.pending, (state, action) => {
+                const conversation = state.chats.find((chat) => {
+                    return chat.id === action.meta.arg.conversationId
+                })
+                if (conversation) {
+                    conversation.isInCompleting = true
+                }
             })
             .addCase(completeMessages.fulfilled, (state, action) => {
-                if (state.currentChat && state.currentChat.id === action.payload.id) {
-                    state.currentChatMessages?.push(action.payload.message)
+                const conversation = state.chats.find((chat) => {
+                    return chat.id === action.meta.arg.conversationId
+                })
+                if (conversation) {
+                    conversation.isInCompleting = false
                 }
-                state.isCompleting = false
             })
-            .addCase(completeMessages.rejected, (state) => {
-                state.isCompleting = false
+            .addCase(completeMessages.rejected, (state, action) => {
+                const conversation = state.chats.find((chat) => {
+                    return chat.id === action.meta.arg.conversationId
+                })
+                if (conversation) {
+                    conversation.isInCompleting = false
+                }
             })
             // Chat Messages
             .addCase(listMessages.fulfilled, (state, action) => {
-                state.currentChatMessages = action.payload.messages
+                if (state.currentChatId && state.currentChatId === action.meta.arg) {
+                    state.currentChatMessages = action.payload.messages
+                }
             })
             // Models
             .addCase(loadAllModels.fulfilled, (state, action) => {
                 state.models = action.payload
             })
             .addCase(getModelForCurrentConversation.fulfilled, (state, action) => {
-                if (state.currentChat && state.currentChat.id === action.payload.conversationId) {
+                if (state.currentChatId && state.currentChatId === action.payload.conversationId) {
                     state.currentModel = action.payload.model
                 }
             })
             .addCase(updateModelForCurrentConversation.fulfilled, (state, action) => {
-                if (state.currentChat && state.currentChat.id === action.payload.conversationId) {
+                if (state.currentChatId && state.currentChatId === action.payload.conversationId) {
                     state.currentModel = action.payload.model
                 }
             })

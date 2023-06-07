@@ -10,7 +10,7 @@ interface Props {
 export default function({ title, models = [], onSelectModel = () => { }, defaultModel }: Props) {
     const [showTools, setShowTools] = useState(false)
 
-    const animationStyles = useSpring({
+    const [animationStyles, _] = useSpring({
         from: {
             opacity: 0,
             scale: 0.9,
@@ -23,7 +23,7 @@ export default function({ title, models = [], onSelectModel = () => { }, default
         },
         config: config.gentle,
         reset: true,
-    })
+    }, [showTools, title])
 
     return (
         <div

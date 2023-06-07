@@ -2,8 +2,10 @@ import { animated, useSpring } from "@react-spring/web";
 import { Cat } from "lucide-react";
 import { useState } from "react";
 
+
 export default function() {
 
+    // Animation
     const [reverse, setReverse] = useState(false)
     const loadingAnimationStyles = useSpring({
         from: { opacity: 0.8, scale: 0.99, },

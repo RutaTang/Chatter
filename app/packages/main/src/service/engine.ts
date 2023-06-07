@@ -8,7 +8,7 @@ export class Service<T extends Channel> {
     /**
      * Placeholder method for processing service requests.
      */
-    process?: (event: any, args: T['args']) => T['return'] | Promise<T['return']>
+    process?: (event: any, args: T['args']) => Promise<T['return']>
 }
 
 /**

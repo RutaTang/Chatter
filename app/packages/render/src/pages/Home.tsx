@@ -1,4 +1,4 @@
-import { ReactNode, useContext, useEffect, } from "react"
+import { ReactNode, useContext, useEffect, useState, } from "react"
 import { ChevronDown, ChevronUp, RefreshCw, Settings, Trash } from "lucide-react";
 
 import SideBar from "../components/SideBar"
@@ -19,11 +19,12 @@ export default function() {
 
     // States 
     const chats = useAppSelector(state => state.chat.chats)
-    const currentChat = useAppSelector(state => state.chat.currentChat)
     const messages = useAppSelector(state => state.chat.currentChatMessages)
-    const isCompleting = useAppSelector(state => state.chat.isCompleting)
     const models = useAppSelector(state => state.chat.models)
     const currentModel = useAppSelector(state => state.chat.currentModel)
+    const currentChatId = useAppSelector(state => state.chat.currentChatId)
+
+    const [currentChat, setCurrentChat] = useState<Conversation | undefined>(undefined)
 
     // Contexts
     const { show } = useContext(ModalContext)
@@ -197,15 +198,19 @@ export default function() {
     }, [])
 
     useEffect(() => {
-        if (currentChat && currentChat.id) {
+        if (currentChat) {
             disptachListMessages()
             dispatchGetModelForCurrentConversation()
         }
     }, [currentChat])
 
     useEffect(() => {
-        // console.log(currentModel)
-    }, [currentModel])
+        if (currentChatId) {
+            setCurrentChat(chats.find(chat => chat.id === currentChatId))
+        } else {
+            setCurrentChat(undefined)
+        }
+    }, [currentChatId, chats])
 
     return (
         <div className="flex flex-row w-full h-full">
@@ -237,7 +242,7 @@ export default function() {
                         <Dialogue
                             btns={conversationItemFeaturesBtns}
                             title={currentChat?.title || ""}
-                            isCompleting={isCompleting}
+                            isCompleting={currentChat?.isInCompleting}
                             defaultDialogueInputRole={Role.User}
                             roles={
                                 Object.values(Role)

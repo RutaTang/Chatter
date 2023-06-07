@@ -9,6 +9,7 @@ export type Conversation = {
     title: string
     updatedAt: number
     createdAt: number
+    isInCompleting?: boolean
 }
 
 export type Conversations = Conversation[]
