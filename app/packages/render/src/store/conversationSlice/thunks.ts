@@ -3,7 +3,7 @@ import { NAME } from "./constants"
 import { Conversation, Conversations, Message } from "../../types"
 import { integrateBackendConditionally } from "../../utils/integrate"
 import { RootState } from ".."
-import { UpdateMessageRole, type AddConversation, type AddMessage, type CompleteMessages, type DeleteConversation, type GetModelForConversation, type ListAllModels, type ListConversations, type ListMessages, type RetitleConversation, type SwapTwoMessagesForAConversation, type UpdateModelForConversation } from "types"
+import { UpdateMessageRole, type AddConversation, type AddMessage, type CompleteMessages, type DeleteConversation, type GetModelForConversation, type ListAllModels, type ListConversations, type ListMessages, type RetitleConversation, type SwapTwoMessagesForAConversation, type UpdateModelForConversation, DeleteMessage } from "types"
 import { invock } from "../../utils/service"
 import { Omit } from "@react-spring/web"
 
@@ -195,6 +195,36 @@ export const addMessage = createAsyncThunk<
                     conversationId: conversationId,
                     role: message.role,
                     content: message.content,
+                })
+                await thunkApi.dispatch(listMessages(conversationId))
+            }
+        })
+    }
+)
+
+export const deleteMessage = createAsyncThunk<
+    void,
+    {
+        conversationId: Conversation['id'],
+        messageId: Message['id']
+    },
+    {
+        state: RootState
+    }
+>(
+    `${NAME}/deleteMessage`,
+    async (
+        {
+            conversationId, messageId
+        },
+        thunkApi
+    ) => {
+        await integrateBackendConditionally<void>({
+            none: () => {
+            },
+            electron: async () => {
+                await invock<DeleteMessage>("delete-message", {
+                    messageId: messageId
                 })
                 await thunkApi.dispatch(listMessages(conversationId))
             }

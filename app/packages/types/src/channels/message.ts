@@ -16,6 +16,13 @@ export interface AddMessage {
     return: void
 }
 
+// DeleteMessage Channel
+export interface DeleteMessage {
+    name: "delete-message"
+    args: { messageId: Message["id"] }
+    return: void
+}
+
 // CompleteMessages Channel
 export interface CompleteMessages {
     name: "complete-messages"

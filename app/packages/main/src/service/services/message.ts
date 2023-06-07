@@ -1,4 +1,4 @@
-import { addMessage, listMessages, swapMessagesOrder, updateMessasgeRole as updateMesssageRole } from "../../store/operations/message";
+import { addMessage, deleteMessage, listMessages, swapMessagesOrder, updateMessasgeRole as updateMesssageRole } from "../../store/operations/message";
 import { getManifest } from "../../store/operations/settings";
 import { BUILT_IN_MODELS_PLUGINS_PATH } from "../../utils";
 import { Service, serviceEngine } from "../engine";
@@ -8,6 +8,7 @@ import type {
     CompleteMessages as CompleteMessagesChannel,
     SwapTwoMessagesForAConversation as SwapTwoMessagesForAConversationChannel,
     UpdateMessageRole as UpdateMessageRoleChannel,
+    DeleteMessage as DeleteMessageChannel,
     ChatAPI,
     Manifest,
 } from 'types'
@@ -35,6 +36,17 @@ export class AddMessage extends Service<AddMessageChannel> {
         super()
         this.process = async (_e, { conversationId, role, content }) => {
             await addMessage(conversationId, role, content)
+        }
+    }
+}
+
+@serviceEngine.handle<DeleteMessageChannel>("delete-message")
+export class DeleteMessage extends Service<DeleteMessageChannel> {
+
+    constructor() {
+        super()
+        this.process = async (_e, { messageId }) => {
+            await deleteMessage(messageId)
         }
     }
 

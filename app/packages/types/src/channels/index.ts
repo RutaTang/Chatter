@@ -8,6 +8,7 @@ export * from './conversation'
 import type {
     ListMessages,
     AddMessage,
+    DeleteMessage,
     CompleteMessages,
     SwapTwoMessagesForAConversation,
     UpdateMessageRole
@@ -36,6 +37,7 @@ export type Channel =
     // Message channels
     ListMessages |
     AddMessage |
+    DeleteMessage |
     CompleteMessages |
     SwapTwoMessagesForAConversation |
     UpdateMessageRole |

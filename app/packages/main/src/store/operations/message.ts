@@ -43,6 +43,15 @@ export async function addMessage(conversationId: number, role: string, content: 
     await AppDataSource.getRepository(Message).save(message)
 }
 
+export async function deleteMessage(messageId: number) {
+    const message = await AppDataSource.getRepository(Message).findOneOrFail({
+        where: {
+            id: messageId
+        }
+    })
+    await AppDataSource.getRepository(Message).remove(message)
+}
+
 export async function swapMessagesOrder(conversationId: number, firstMessageId: number, secondMessageId: number) {
     const conversation = await AppDataSource.getRepository(Conversation).findOneOrFail({
         where: {

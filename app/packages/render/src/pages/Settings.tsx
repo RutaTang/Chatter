@@ -11,7 +11,6 @@ export default function() {
     const sideSections = useAppSelector(state => state.settings.sideSectionsAndItems)
     const currentSideItemId = useAppSelector(state => state.settings.currentSideItemId)
     const currentContentSections = useAppSelector(state => state.settings.currentContentSections)
-    // const theme = useAppSelector(state => state.settings.theme)
 
 
     // Dispatchs

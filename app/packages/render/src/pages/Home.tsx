@@ -5,7 +5,7 @@ import SideBar from "../components/SideBar"
 import Dialogue from "../components/Dialogue"
 import { ROLE_ICON_MAP } from "../constants"
 import { useAppDispatch, useAppSelector } from "../store"
-import { addConversation, addMessage, deleteConversation, loadConversations, updateConversationTitle, completeMessages, listMessages, addMessageAndCompleteChat, loadAllModels, getModelForCurrentConversation, updateModelForCurrentConversation, moveMessageUpOrDown, updateMessageRole } from "../store/conversationSlice/thunks"
+import { addConversation, addMessage, deleteConversation, loadConversations, updateConversationTitle, completeMessages, listMessages, addMessageAndCompleteChat, loadAllModels, getModelForCurrentConversation, updateModelForCurrentConversation, moveMessageUpOrDown, updateMessageRole, deleteMessage } from "../store/conversationSlice/thunks"
 import { selectChat } from "../store/conversationSlice";
 import { Conversation, Message, Role } from "../types";
 import OptionBtn from "../components/OptionBtn";
@@ -53,7 +53,7 @@ export default function() {
         dispatch(selectChat(chatId))
     }
     const dispatchAddMessage = (message: Omit<Message, 'id'>) => {
-        if (!currentChat?.id) {
+        if (!currentChat) {
             return
         }
         return dispatch(addMessage({
@@ -61,11 +61,20 @@ export default function() {
             message: message
         }))
     }
+    const dispatchDeleteMessage = (messageId: Message['id']) => {
+        if (!currentChat) {
+            return
+        }
+        dispatch(deleteMessage({
+            conversationId: currentChat.id,
+            messageId: messageId
+        }))
+    }
     const dispathLoadChats = () => {
         dispatch(loadConversations())
     }
     const dispatchCompleteChat = () => {
-        if (!currentChat?.id || !messages) {
+        if (!currentChat || !messages) {
             return
         }
         dispatch(completeMessages({
@@ -75,13 +84,13 @@ export default function() {
         }))
     }
     const disptachListMessages = () => {
-        if (!currentChat?.id) {
+        if (!currentChat) {
             return
         }
         dispatch(listMessages(currentChat.id))
     }
     const dispatchAddMessageAndCompleteChat = (message: Omit<Message, "id">) => {
-        if (!currentChat?.id) {
+        if (!currentChat) {
             return
         }
         dispatch(addMessageAndCompleteChat({
@@ -101,7 +110,7 @@ export default function() {
     }
 
     const distpatchUpdateModelForCurrentConversation = (model: string) => {
-        if (!currentChat?.id) {
+        if (!currentChat) {
             return
         }
         dispatch(updateModelForCurrentConversation({
@@ -111,7 +120,7 @@ export default function() {
     }
 
     const dispatchMoveMessageUpOrDown = (messageId: Message['id'], direction: "up" | "down") => {
-        if (!currentChat?.id) {
+        if (!currentChat) {
             return
         }
         dispatch(moveMessageUpOrDown({
@@ -181,7 +190,9 @@ export default function() {
             id
         }) => {
             return (
-                <div onClick={() => { }}>
+                <div onClick={() => {
+                    dispatchDeleteMessage(id)
+                }}>
                     <Trash size={15} />
                 </div>
             )
