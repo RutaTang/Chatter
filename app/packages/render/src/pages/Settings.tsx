@@ -16,10 +16,10 @@ export default function() {
 
     // Dispatchs
     const dispatch = useAppDispatch()
-    const dispatchSetCurrentSideSection = (sectionId: any) => {
+    const dispatchSetCurrentSideSection = (sectionId: number) => {
         dispatch(setCurrentSideSection(sectionId))
     }
-    const dispatchUpdateContentOptionItem = (contentItemId: any, value: string) => {
+    const dispatchUpdateContentOptionItem = (contentItemId: number, value: string) => {
         dispatch(updateContentItemValue({
             contentItemId,
             value

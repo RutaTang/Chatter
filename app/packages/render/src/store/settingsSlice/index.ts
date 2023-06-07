@@ -7,7 +7,7 @@ interface SettingsState {
     sideSectionsAndItems: {
         title: string,
         items: {
-            id: any,
+            id: number,
             title: string,
         }[]
     }[],

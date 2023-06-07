@@ -5,7 +5,7 @@ export enum Role {
 }
 
 export type Conversation = {
-    id: any
+    id: number
     title: string
     updatedAt: number
     createdAt: number
@@ -15,7 +15,7 @@ export type Conversation = {
 export type Conversations = Conversation[]
 
 export type Message = {
-    id: any
+    id: number
     role: string
     content: string
 }
@@ -30,7 +30,7 @@ export interface SettingsSidebarSectionData {
 export interface SettingsContentSectionData {
     title: string
     items?: {
-        id: any
+        id: number
         title: string
         description?: string
         value?: any

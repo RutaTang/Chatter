@@ -3,7 +3,7 @@ import ChatItem from "../ChatItem";
 import NewChatButton from "../NewChatBtn";
 
 interface RequiredID {
-    id: any
+    id: number
     title: string
 }
 

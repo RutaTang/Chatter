@@ -4,13 +4,13 @@ interface Props {
     sections?: {
         title: string
         items?: {
-            id: any
+            id: number
             title: string
             description?: string
-            value: any
+            value?: any
         }[]
     }[]
-    onActionValueChange?: (contentItemId: any, value: any) => void
+    onActionValueChange?: (contentItemId: number, value: any) => void
 }
 
 export default function({ sections, onActionValueChange = () => { } }: Props) {

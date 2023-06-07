@@ -6,17 +6,17 @@ import { ReactNode, useEffect } from "react";
 
 export interface Props {
     agentIcon: ({ role }: { role: string }) => ReactNode;
-    id: any;
+    id: number;
     content: string;
     roles: string[];
     defaultRole?: string;
     className?: string;
     btns?: ((message: {
-        id: any;
+        id: number;
         role: string;
         content: string;
     }) => ReactNode)[];
-    onRoleChange?: (id: any, role: string) => void;
+    onRoleChange?: (id: number, role: string) => void;
 }
 
 /**

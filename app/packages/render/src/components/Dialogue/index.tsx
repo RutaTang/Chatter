@@ -16,7 +16,7 @@ interface Props {
     agentIcon: ({ role }: { role: string; }) => ReactNode
     defaultDialogueInputRole?: string
     messages?: {
-        id: any
+        id: number
         role: string
         content: string
     }[]
