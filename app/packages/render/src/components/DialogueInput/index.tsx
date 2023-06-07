@@ -84,7 +84,6 @@ export default function({ className = "", onComplete: onComplete, onAdd: onAdd, 
                             role: currentRole,
                             content,
                         })
-                        setContent("")
                     }}>Complete</button>
                     <button className="btn" onClick={() => {
                         onAdd && onAdd({
