@@ -7,6 +7,6 @@ export interface ChatAPI {
     }: {
         messages: Omit<Message, "id">[],
         manifest?: Manifest
-    }): Promise<Message>;
+    }): Promise<Omit<Message, "id">>;
 }
 

@@ -1,19 +1,15 @@
-import type { ChatAPI, Message, Messages, Manifest } from 'types'
+import type { ChatAPI, Message, Manifest } from 'types'
 import { ChatCompletionRequestMessage, Configuration, OpenAIApi } from "openai";
 
 export default class ChatGPT3API implements ChatAPI {
 
     constructor() { }
 
-    async complete({ messages, manifest }: {
-        messages: Messages;
-        manifest: Manifest;
-    }
-    ): Promise<Message> {
+    async complete({ messages, manifest }: { messages: Omit<Message, 'id'>[]; manifest?: Manifest | undefined; }): Promise<Omit<Message, "id">> {
         // Params
-        const apiKey = manifest.sections.find(s => s.title === 'Authentication')?.items.find(i => i.title === 'API Key')?.value || ""
-        const maxTokens = Number(manifest.sections.find(s => s.title === 'Parameters')?.items.find(i => i.title === 'Max Tokens')?.value) || 300
-        const temperature = Number(manifest.sections.find(s => s.title === 'Parameters')?.items.find(i => i.title === 'Temperature')?.value) || 0.9
+        const apiKey = manifest?.sections.find(s => s.title === 'Authentication')?.items.find(i => i.title === 'API Key')?.value || ""
+        const maxTokens = Number(manifest?.sections.find(s => s.title === 'Parameters')?.items.find(i => i.title === 'Max Tokens')?.value) || 300
+        const temperature = Number(manifest?.sections.find(s => s.title === 'Parameters')?.items.find(i => i.title === 'Temperature')?.value) || 0.9
 
         // Model 
         const configuration = new Configuration({
