@@ -175,17 +175,6 @@ export default function() {
                 </div >
             )
         },
-        // TODO: Regenerate message
-        ({
-            id
-        }) => {
-            return (
-                <div>
-                    <RefreshCw size={15} />
-                </div>
-            )
-        },
-        // TODO: Delete message
         ({
             id
         }) => {
