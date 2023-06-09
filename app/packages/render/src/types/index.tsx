@@ -20,6 +20,11 @@ export type Message = {
     content: string
 }
 
+export type Actor = {
+    name: string
+    enabled?: boolean
+}
+
 export interface SettingsSidebarSectionData {
     title: string
     items?: {

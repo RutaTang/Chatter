@@ -2,7 +2,9 @@ import type {
     ListConversations,
     AddConversation,
     RetitleConversation,
-    DeleteConversation
+    DeleteConversation,
+    GetActors,
+    EnableActors
 } from "./conversation"
 export * from './conversation'
 import type {
@@ -34,6 +36,8 @@ export type Channel =
     AddConversation |
     RetitleConversation |
     DeleteConversation |
+    GetActors |
+    EnableActors |
     // Message channels
     ListMessages |
     AddMessage |
@@ -49,4 +53,4 @@ export type Channel =
     // Models channels
     UpdateModelForConversation |
     GetModelForConversation |
-    ListAllModels
+    ListAllModels 

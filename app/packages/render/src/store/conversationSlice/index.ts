@@ -1,9 +1,9 @@
 import { createSlice, } from "@reduxjs/toolkit"
 
 import { NAME } from "./constants"
-import { addConversation, deleteConversation, loadConversations, updateConversationTitle, completeMessages, listMessages, loadAllModels, getModelForCurrentConversation, updateModelForCurrentConversation } from "./thunks"
+import { addConversation, deleteConversation, loadConversations, updateConversationTitle, completeMessages, listMessages, loadAllModels, getModelForCurrentConversation, updateModelForCurrentConversation, getActors } from "./thunks"
 import { sortChats } from "./utils"
-import { Conversation, Message, Conversations } from "../../types"
+import { Conversation, Message, Conversations, Actor } from "../../types"
 
 interface ConversationState {
     // All chats
@@ -20,6 +20,9 @@ interface ConversationState {
 
     // Current model for current conversation 
     currentModel?: string
+
+    // Current actors for current conversation
+    currentActors?: Actor[]
 }
 
 const initialState: ConversationState = {
@@ -104,6 +107,13 @@ export const conversationSlice = createSlice({
             .addCase(updateModelForCurrentConversation.fulfilled, (state, action) => {
                 if (state.currentChatId && state.currentChatId === action.payload.conversationId) {
                     state.currentModel = action.payload.model
+                }
+            })
+            // Actors
+            .addCase(getActors.fulfilled, (state, action) => {
+                console.log(action.payload)
+                if (state.currentChatId && state.currentChatId === action.meta.arg.conversationId) {
+                    state.currentActors = action.payload
                 }
             })
     }

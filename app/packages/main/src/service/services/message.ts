@@ -78,7 +78,6 @@ export class CompleteMessages extends Service<CompleteMessagesChannel> {
                 return path.join(BUILT_IN_MODELS_PLUGINS_PATH, file)
             }
 
-
             // convert messages to the format expected by the model
             messages = messages.map(message => {
                 return {
@@ -94,7 +93,7 @@ export class CompleteMessages extends Service<CompleteMessagesChannel> {
                 messages,
                 manifest: await getManifest(model)
             })
-            return message
+            return [message]
         }
     }
 

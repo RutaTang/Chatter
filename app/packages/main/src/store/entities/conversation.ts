@@ -38,6 +38,13 @@ export class Conversation {
     })
     model!: string;
 
+    // Enabled actors plugins
+    @Column({
+        type: "simple-array",
+        default: "",
+    })
+    actors!: string[];
+
 
     @OneToMany(() => Message, message => message.conversation, {
         nullable: true

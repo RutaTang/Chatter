@@ -28,3 +28,21 @@ export interface DeleteConversation {
     args: Pick<Conversation, "id">
     return: void
 }
+
+
+// GetActors Channel
+export interface GetActors {
+    name: "get-actors"
+    args: { conversationId: Conversation["id"] }
+    return: {
+        name: string
+        enabled: boolean
+    }[]
+}
+
+// EnableActors Channel
+export interface EnableActors {
+    name: "enable-actors"
+    args: { conversationId: Conversation["id"], actors: string[] }
+    return: void
+}

@@ -2,6 +2,7 @@ export type Message = {
     id: number;
     role: string;
     content: string;
+    hidden?: boolean;
 }
 
 export type Messages = Message[]

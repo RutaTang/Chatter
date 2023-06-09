@@ -1,5 +1,6 @@
 import { AppDataSource } from "../data-source";
 import { Conversation } from "../entities/conversation";
+import { listAllActors } from "./settings";
 
 export async function listConversations() {
     return await AppDataSource.getRepository(Conversation).find();
@@ -44,5 +45,41 @@ export async function getConversation(id: number) {
 }
 
 export async function updateConversation(conversation: Conversation) {
+    await AppDataSource.getRepository(Conversation).save(conversation);
+}
+
+export async function getEnabledActors(id: number) {
+    const conversation = await AppDataSource.getRepository(Conversation).findOneOrFail({
+        where: {
+            id: id
+        }
+    });
+    return conversation.actors;
+}
+
+export async function getActors(id: number) {
+    const conversation = await AppDataSource.getRepository(Conversation).findOneOrFail({
+        where: {
+            id: id
+        }
+    });
+    const enabledActors = conversation.actors;
+    const allActors = await listAllActors();
+    const actors = allActors.map(actor => {
+        return {
+            name: actor,
+            enabled: enabledActors.includes(actor)
+        }
+    })
+    return actors;
+}
+
+export async function setEnabledActors(id: number, actors: string[]) {
+    const conversation = await AppDataSource.getRepository(Conversation).findOneOrFail({
+        where: {
+            id: id
+        }
+    });
+    conversation.actors = actors;
     await AppDataSource.getRepository(Conversation).save(conversation);
 }

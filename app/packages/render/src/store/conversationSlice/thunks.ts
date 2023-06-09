@@ -1,9 +1,9 @@
 import { createAsyncThunk } from "@reduxjs/toolkit"
-import { NAME } from "./constants"
-import { Conversation, Conversations, Message } from "../../types"
+import { FOLLOW_EACH_USER_MESSAGE_PROMPT_MESSAGE, INFORM_ACTORS_LIST_FORMAT_PROMPT_MESSAGE, INFORM_ACTORS_LIST_PROMPT_MESSAGE, INFORM_ACTORS_RESPONSE_FORMAT_PROMPT_MESSAGE, NAME } from "./constants"
+import { Actor, Conversation, Conversations, Message } from "../../types"
 import { integrateBackendConditionally } from "../../utils/integrate"
 import { RootState } from ".."
-import { UpdateMessageRole, type AddConversation, type AddMessage, type CompleteMessages, type DeleteConversation, type GetModelForConversation, type ListAllModels, type ListConversations, type ListMessages, type RetitleConversation, type SwapTwoMessagesForAConversation, type UpdateModelForConversation, DeleteMessage } from "types"
+import { UpdateMessageRole, type AddConversation, type AddMessage, type CompleteMessages, type DeleteConversation, type GetModelForConversation, type ListAllModels, type ListConversations, type ListMessages, type RetitleConversation, type SwapTwoMessagesForAConversation, type UpdateModelForConversation, DeleteMessage, GetActors } from "types"
 import { invock } from "../../utils/service"
 import { Omit } from "@react-spring/web"
 
@@ -123,15 +123,31 @@ export const completeMessages = createAsyncThunk<
             none: () => {
             },
             electron: async () => {
-                const message = await invock<CompleteMessages>("complete-messages", {
+                const actors = thunkApi.getState().chat.currentActors
+                const enabledActors = actors?.filter(actor => actor.enabled)
+                if (enabledActors && enabledActors.length > 0) {
+                    messages = messages.map(message => {
+                        if (message.role === "user") {
+                            message.content = [message.content, FOLLOW_EACH_USER_MESSAGE_PROMPT_MESSAGE].join('\n\n')
+                        }
+                        return message
+                    })
+                }
+                const completedMessages = await invock<CompleteMessages>("complete-messages", {
                     model: model,
                     messages: messages
                 })
 
-                await thunkApi.dispatch(addMessage({
-                    conversationId,
-                    message
-                }))
+                // TODO: if actors plugin are enabled, call thier endpoints
+                // Then, the endpoint should return a json format response
+                // And use that response to complet the all messages again
+
+                for (const message of completedMessages) {
+                    await thunkApi.dispatch(addMessage({
+                        conversationId,
+                        message
+                    }))
+                }
             }
         })
     }
@@ -191,11 +207,29 @@ export const addMessage = createAsyncThunk<
             none: () => {
             },
             electron: async () => {
-                await invock<AddMessage>("add-message", {
-                    conversationId: conversationId,
-                    role: message.role,
-                    content: message.content,
-                })
+                const addMessageHelper = async (role: string, content: string) => {
+                    await invock<AddMessage>("add-message", {
+                        conversationId,
+                        role,
+                        content,
+                    })
+                }
+                // if no messages in the conversation 
+                // and if any actor plugins are enabled
+                // inject system prompt messaegs
+                const messages = thunkApi.getState().chat.currentChatMessages
+                const actors = thunkApi.getState().chat.currentActors
+                const enabledActors = actors?.filter(actor => actor.enabled)
+                if ((!messages || messages.length === 0) && (enabledActors && enabledActors.length > 0)) {
+                    if (enabledActors.length > 0) {
+                        // inject system prompt messages about the actors
+                        await addMessageHelper("system", INFORM_ACTORS_LIST_FORMAT_PROMPT_MESSAGE)
+                        await addMessageHelper("system", INFORM_ACTORS_RESPONSE_FORMAT_PROMPT_MESSAGE)
+                        await addMessageHelper("system", INFORM_ACTORS_LIST_PROMPT_MESSAGE)
+
+                    }
+                }
+                await addMessageHelper(message.role, message.content)
                 await thunkApi.dispatch(listMessages(conversationId))
             }
         })
@@ -212,7 +246,7 @@ export const deleteMessage = createAsyncThunk<
         state: RootState
     }
 >(
-    `${NAME}/deleteMessage`,
+    `${NAME} / deleteMessage`,
     async (
         {
             conversationId, messageId
@@ -243,7 +277,7 @@ export const addMessageAndCompleteChat = createAsyncThunk<
         state: RootState
     }
 >(
-    `${NAME}/addMessageAndCompleteChat`,
+    `${NAME} / addMessageAndCompleteChat`,
     async ({
         conversationId, message, model
     }, thunkAPI) => {
@@ -268,7 +302,7 @@ export const addMessageAndCompleteChat = createAsyncThunk<
 
 
 export const loadAllModels = createAsyncThunk<string[]>(
-    `${NAME}/loadAllModels`,
+    `${NAME} / loadAllModels`,
     async () => {
         const models = await invock<ListAllModels>("list-all-models", undefined)
         return models
@@ -276,7 +310,7 @@ export const loadAllModels = createAsyncThunk<string[]>(
 )
 
 export const getModelForCurrentConversation = createAsyncThunk(
-    `${NAME}/getModelForCurrentConversation`,
+    `${NAME} / getModelForCurrentConversation`,
     async (conversationId: Conversation['id']) => {
         const model = await invock<GetModelForConversation>("get-model-for-conversation", { conversationId })
         return {
@@ -287,7 +321,7 @@ export const getModelForCurrentConversation = createAsyncThunk(
 )
 
 export const updateModelForCurrentConversation = createAsyncThunk(
-    `${NAME}/updateModelForCurrentConversation`,
+    `${NAME} / updateModelForCurrentConversation`,
     async ({
         conversationId, model
     }: {
@@ -316,7 +350,7 @@ export const swapTwoMessagesForCurrentConversation = createAsyncThunk<
         state: RootState
     }
 >(
-    `${NAME}/swapTwoMessagesForCurrentConversation`,
+    `${NAME} / swapTwoMessagesForCurrentConversation`,
     async ({
         conversationId, firstMessageId, secondMessageId
     }, thunkApi) => {
@@ -340,7 +374,7 @@ export const moveMessageUpOrDown = createAsyncThunk<
         state: RootState
     }
 >(
-    `${NAME}/moveMessageUpForCurrentConversation`,
+    `${NAME} / moveMessageUpForCurrentConversation`,
     async ({
         conversationId, messageId, direction
     }, thunkApi) => {
@@ -374,7 +408,7 @@ export const updateMessageRole = createAsyncThunk<
         state: RootState
     }
 >(
-    `${NAME}/updateMessageRole`,
+    `${NAME} / updateMessageRole`,
     async ({ messageId, role }, thunkApi) => {
         await invock<UpdateMessageRole>("update-message-role", {
             messageId,
@@ -385,3 +419,18 @@ export const updateMessageRole = createAsyncThunk<
         thunkApi.dispatch(listMessages(id))
     }
 )
+
+
+export const getActors = createAsyncThunk<
+    Actor[],
+    {
+        conversationId: number
+    }
+>(
+    `${NAME} / getActors`,
+    async ({ conversationId }) => {
+        const actors = await invock<GetActors>("get-actors", { conversationId })
+        return actors
+    }
+)
+

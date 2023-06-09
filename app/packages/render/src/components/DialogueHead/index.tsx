@@ -1,13 +1,22 @@
 import { animated, config, useSpring } from "@react-spring/web"
 import { useState } from "react"
+import "./index.css"
 
-interface Props {
+export interface Props {
     title: string
+    // Models
     models?: string[]
     defaultModel?: string
     onSelectModel?: (model: string) => void
+    // Actors
+    actors?: {
+        name: string
+        enabled?: boolean
+    }[]
+    disableChangeActors?: boolean
+    onCheckActor?: (actor: string, enabled: boolean) => void
 }
-export default function({ title, models = [], onSelectModel = () => { }, defaultModel }: Props) {
+export default function({ title, models = [], onSelectModel = () => { }, defaultModel, actors = [], disableChangeActors: disableCheckActors = false, onCheckActor = () => { } }: Props) {
     const [showTools, setShowTools] = useState(false)
 
     const [animationStyles, _] = useSpring({
@@ -25,6 +34,8 @@ export default function({ title, models = [], onSelectModel = () => { }, default
         reset: true,
     }, [showTools, title])
 
+    // console.log(disableCheckActors, actors)
+
     return (
         <div
             className="w-full h-full [&>div]:h-12 min-h-12 flex justify-center items-center"
@@ -37,9 +48,10 @@ export default function({ title, models = [], onSelectModel = () => { }, default
         >
             {
                 showTools ? (
-                    <animated.div style={animationStyles} className="flex justify-center items-center">
+                    <animated.div style={animationStyles} className="w-full flex justify-start items-center space-x-8 overflow-x-scroll no-scrollbar">
                         {/* Models */}
                         <div className="flex justify-center items-center space-x-2">
+                            <span className="font-semibold">Model:</span>
                             <select
                                 className="focus:outline-none bg-transparent"
                                 value={defaultModel}
@@ -56,8 +68,33 @@ export default function({ title, models = [], onSelectModel = () => { }, default
                                 }
                             </select>
                         </div>
-                        {/* TODO: Actions */}
-                        <div></div>
+                        {/* Actors */}
+                        <div className="flex justify-center items-center space-x-3">
+                            <span className="font-semibold">Actors:</span>
+                            <div className="flex items-center space-x-3">
+                                {
+                                    [...actors]
+                                        .sort((a, _) => {
+                                            return disableCheckActors ? a.enabled ? -1 : 1 : 0
+                                        })
+                                        .map((actor) => {
+                                            return (
+                                                <label key={actor.name} className="label cursor-pointer space-x-2 whitespace-nowrap">
+                                                    <input type="checkbox" className="checkbox checkbox-sm" checked={actor.enabled} disabled={disableCheckActors} onChange={(e) => {
+                                                        onCheckActor(actor.name, e.target.checked)
+                                                    }} />
+                                                    <span className="label-text text-base">{actor.name}</span>
+                                                </label>
+                                            )
+                                        })
+                                }
+                                {
+                                    actors.length === 0 && (
+                                        <span className="">No available actors</span>
+                                    )
+                                }
+                            </div>
+                        </div>
                     </animated.div>
                 ) : (
 

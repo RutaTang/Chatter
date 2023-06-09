@@ -1,11 +1,11 @@
 import { ReactNode, useContext, useEffect, useState, } from "react"
-import { ChevronDown, ChevronUp, RefreshCw, Settings, Trash } from "lucide-react";
+import { ChevronDown, ChevronUp, Settings, Trash } from "lucide-react";
 
 import SideBar from "../components/SideBar"
 import Dialogue from "../components/Dialogue"
 import { ROLE_ICON_MAP } from "../constants"
 import { useAppDispatch, useAppSelector } from "../store"
-import { addConversation, addMessage, deleteConversation, loadConversations, updateConversationTitle, completeMessages, listMessages, addMessageAndCompleteChat, loadAllModels, getModelForCurrentConversation, updateModelForCurrentConversation, moveMessageUpOrDown, updateMessageRole, deleteMessage } from "../store/conversationSlice/thunks"
+import { addConversation, addMessage, deleteConversation, loadConversations, updateConversationTitle, completeMessages, listMessages, addMessageAndCompleteChat, loadAllModels, getModelForCurrentConversation, updateModelForCurrentConversation, moveMessageUpOrDown, updateMessageRole, deleteMessage, getActors } from "../store/conversationSlice/thunks"
 import { selectChat } from "../store/conversationSlice";
 import { Conversation, Message, Role } from "../types";
 import OptionBtn from "../components/OptionBtn";
@@ -23,6 +23,7 @@ export default function() {
     const models = useAppSelector(state => state.chat.models)
     const currentModel = useAppSelector(state => state.chat.currentModel)
     const currentChatId = useAppSelector(state => state.chat.currentChatId)
+    const actors = useAppSelector(state => state.chat.currentActors)
 
     const [currentChat, setCurrentChat] = useState<Conversation | undefined>(undefined)
 
@@ -135,6 +136,12 @@ export default function() {
             role
         }))
     }
+    const dispatchGetActors = () => {
+        if (!currentChat) {
+            return
+        }
+        dispatch(getActors({ conversationId: currentChat.id }))
+    }
 
     // More UIs
     const sideBarOptionList = [
@@ -199,6 +206,7 @@ export default function() {
 
     useEffect(() => {
         if (currentChat) {
+            dispatchGetActors()
             disptachListMessages()
             dispatchGetModelForCurrentConversation()
         }
@@ -269,6 +277,12 @@ export default function() {
                             onSelectModel={model => {
                                 distpatchUpdateModelForCurrentConversation(model)
                             }}
+                            // Actor related
+                            actors={actors}
+                            onCheckActor={(actor, enabled) => {
+                                console.log(actor, enabled)
+                            }}
+                            disableChangeActors={messages && messages.length > 0}
                         />
                     ) : (
                         <div className="flex flex-col items-center justify-center w-full h-full select-none">

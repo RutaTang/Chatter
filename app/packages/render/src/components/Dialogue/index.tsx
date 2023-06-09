@@ -7,6 +7,7 @@ import DialogueHead from "../DialogueHead";
 
 import type { Props as DialoguItemPros } from '../DialogueItem';
 import type { Message as DialogueInputMessage } from '../DialogueInput'
+import type { Props as DialogueHeadProps } from '../DialogueHead'
 import DelayToShow from "../DelayToShow";
 
 
@@ -35,11 +36,16 @@ interface Props {
     models?: string[]
     defaultModel?: string
     onSelectModel?: (model: string) => void
+
+    // Actors
+    actors?: DialogueHeadProps['actors']
+    disableChangeActors?: DialogueHeadProps['disableChangeActors']
+    onCheckActor?: DialogueHeadProps['onCheckActor']
 }
 
 export default function({
     messages, roles, agentIcon, onComplete, onAdd, defaultDialogueInputRole, onAddAndComplete, title, isCompleting = false, models, onSelectModel, defaultModel,
-    btns, onRoleChange
+    btns, onRoleChange, actors, disableChangeActors, onCheckActor
 }: Props) {
 
 
@@ -68,7 +74,15 @@ export default function({
         <div className="w-full h-full overflow-scroll" >
             {/* Head */}
             <div className="bg-base-200 text-md h-16 line-clamp-1 px-10 empty-height-invarant font-semibold">
-                <DialogueHead title={title} models={models} defaultModel={defaultModel} onSelectModel={onSelectModel} />
+                <DialogueHead
+                    title={title}
+                    models={models}
+                    defaultModel={defaultModel}
+                    onSelectModel={onSelectModel}
+                    actors={actors}
+                    disableChangeActors={disableChangeActors}
+                    onCheckActor={onCheckActor}
+                />
             </div>
 
             {/* Divider */}

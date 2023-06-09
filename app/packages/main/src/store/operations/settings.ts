@@ -275,3 +275,8 @@ export async function listAllModels() {
     })
     return sideSection.items?.map(item => item.title) || []
 }
+
+// TODO: get real actors
+export async function listAllActors(): Promise<string[]> {
+    return ["File Operator", "Google"]
+}
