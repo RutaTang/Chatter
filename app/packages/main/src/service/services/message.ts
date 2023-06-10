@@ -45,9 +45,9 @@ export class AddMessage extends Service<AddMessageChannel> {
             // If has enabled actors and no messages, add system prompts
             if (enabledActors.length > 0 && messages.length == 0) {
                 const ROLE = "system"
-                await addMessage(conversationId, ROLE, INFORM_ACTORS_LIST_FORMAT_PROMPT_MESSAGE)
-                await addMessage(conversationId, ROLE, INFORM_ACTORS_RESPONSE_FORMAT_PROMPT_MESSAGE)
-                await addMessage(conversationId, ROLE, INFORM_ACTORS_LIST_PROMPT_MESSAGE)
+                await addMessage(conversationId, ROLE, INFORM_ACTORS_LIST_FORMAT_PROMPT_MESSAGE, true)
+                await addMessage(conversationId, ROLE, INFORM_ACTORS_RESPONSE_FORMAT_PROMPT_MESSAGE, true)
+                await addMessage(conversationId, ROLE, INFORM_ACTORS_LIST_PROMPT_MESSAGE, true)
             }
             await addMessage(conversationId, role, content)
         }
@@ -169,11 +169,19 @@ export class CompleteMessages extends Service<CompleteMessagesChannel> {
                         const restult = await completMessages(formatedMessages)
                         await addMessage(conversationId, restult.role, restult.content)
                     }
+                } else {
+                    // chage the last message to inform not chose any action    
+                    const content = clonedFormatedMessages[clonedFormatedMessages.length - 1].content
+                    // attach prompt to not 
+                    clonedFormatedMessages[clonedFormatedMessages.length - 1].content = `${content} \n\n ${FOLLOW_EACH_USER_MESSAGE_NOT_CHOOSE_ACTOR_PLUGIN_PROMPT_MESSAGE}`
+                    // complete messages
+                    const restult = await completMessages(formatedMessages)
+                    await addMessage(conversationId, restult.role, restult.content)
                 }
             }
-            // For messages with no enabled actors
+            // For any other messages, just complete them
             else {
-                const restult = await completMessages(formatedMessages)
+                const restult = await completMessages(clonedFormatedMessages)
                 await addMessage(conversationId, restult.role, restult.content)
             }
         }
