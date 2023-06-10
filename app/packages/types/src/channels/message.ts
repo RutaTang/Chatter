@@ -26,8 +26,8 @@ export interface DeleteMessage {
 // CompleteMessages Channel
 export interface CompleteMessages {
     name: "complete-messages"
-    args: { model: string, messages: Omit<Message, "id">[] }
-    return: Omit<Message, "id">[]
+    args: { conversationId: Conversation['id'], model: string }
+    return: void
 }
 
 // SwapTwoMessagesForAConversation Channel

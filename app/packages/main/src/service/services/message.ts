@@ -11,10 +11,14 @@ import type {
     DeleteMessage as DeleteMessageChannel,
     ChatAPI,
     Manifest,
+    ActionsRequest,
+    ActionsResponse,
 } from 'types'
 import fs from 'fs'
 import { parse } from "yaml";
 import path from "path";
+import { getActors } from "../../store/operations/conversation";
+import { FOLLOW_EACH_USER_MESSAGE_NOT_CHOOSE_ACTOR_PLUGIN_PROMPT_MESSAGE, FOLLOW_EACH_USER_MESSAGE_PROMPT_MESSAGE, INFORM_ACTIOS_RESPONSE_PROMPT_MESSAGE, INFORM_ACTORS_LIST_FORMAT_PROMPT_MESSAGE, INFORM_ACTORS_LIST_PROMPT_MESSAGE, INFORM_ACTORS_RESPONSE_FORMAT_PROMPT_MESSAGE } from "../../constants";
 
 @serviceEngine.handle<ListMessagesChannel>("list-messages")
 export class ListMessages extends Service<ListMessagesChannel> {
@@ -35,6 +39,16 @@ export class AddMessage extends Service<AddMessageChannel> {
     constructor() {
         super()
         this.process = async (_e, { conversationId, role, content }) => {
+            const actors = await getActors(conversationId)
+            const enabledActors = actors.filter(actor => actor.enabled)
+            const messages = await listMessages(conversationId)
+            // If has enabled actors and no messages, add system prompts
+            if (enabledActors.length > 0 && messages.length == 0) {
+                const ROLE = "system"
+                await addMessage(conversationId, ROLE, INFORM_ACTORS_LIST_FORMAT_PROMPT_MESSAGE)
+                await addMessage(conversationId, ROLE, INFORM_ACTORS_RESPONSE_FORMAT_PROMPT_MESSAGE)
+                await addMessage(conversationId, ROLE, INFORM_ACTORS_LIST_PROMPT_MESSAGE)
+            }
             await addMessage(conversationId, role, content)
         }
     }
@@ -55,45 +69,113 @@ export class DeleteMessage extends Service<DeleteMessageChannel> {
 @serviceEngine.handle<CompleteMessagesChannel>("complete-messages")
 export class CompleteMessages extends Service<CompleteMessagesChannel> {
 
+    async callActions(actions: ActionsRequest): Promise<ActionsResponse> {
+        // throw new Error("Method not implemented.");
+        return [{
+            actor_name: "Google",
+            action_name: "Search on Google",
+            response: "SwiftUI is in version 5.0"
+        }]
+    }
+
     constructor() {
         super()
-        this.process = async (_e, { messages, model }) => {
+        this.process = async (_e, { conversationId, model }) => {
 
-            // Get model package path
-            const getModelPackagePath = async () => {
-                // loop models folder
-                let files = fs.readdirSync(BUILT_IN_MODELS_PLUGINS_PATH)
-                files = files.filter(file => {
-                    // check if file is a folder
-                    const stat = fs.statSync(`${BUILT_IN_MODELS_PLUGINS_PATH}/${file}`)
-                    return stat.isDirectory()
+            // Complete messages
+            const completMessages = async (messages: {
+                role: string,
+                content: string
+            }[]) => {
+                // Get model package path
+                const getModelPackagePath = async () => {
+                    // loop models folder
+                    let files = fs.readdirSync(BUILT_IN_MODELS_PLUGINS_PATH)
+                    files = files.filter(file => {
+                        // check if file is a folder
+                        const stat = fs.statSync(`${BUILT_IN_MODELS_PLUGINS_PATH}/${file}`)
+                        return stat.isDirectory()
+                    })
+                    // check if model exists by comparing the name fron manifest with ${model}
+                    const file = files.find(file => {
+                        const manifestString = (fs.readFileSync(`${BUILT_IN_MODELS_PLUGINS_PATH}/${file}/manifest.yaml`, 'utf-8')).toString()
+                        const manifest: Manifest = parse(manifestString)
+                        return manifest.name === model
+                    })
+                    if (!file) throw new Error(`Model ${model} not found`)
+                    return path.join(BUILT_IN_MODELS_PLUGINS_PATH, file)
+                }
+                const modelPackagePath = await getModelPackagePath()
+                // get model class
+                const c = require(modelPackagePath).default
+                // create model instance
+                const chatApi: ChatAPI = new c()
+                // call model complete method
+                const message = await chatApi.complete({
+                    messages: messages,
+                    manifest: await getManifest(model)
                 })
-                // check if model exists by comparing the name fron manifest with ${model}
-                const file = files.find(file => {
-                    const manifestString = (fs.readFileSync(`${BUILT_IN_MODELS_PLUGINS_PATH}/${file}/manifest.yaml`, 'utf-8')).toString()
-                    const manifest: Manifest = parse(manifestString)
-                    return manifest.name === model
-                })
-                if (!file) throw new Error(`Model ${model} not found`)
-                return path.join(BUILT_IN_MODELS_PLUGINS_PATH, file)
+                return message
             }
 
+            // get messages of the conversation
+            const messages = await listMessages(conversationId)
+
             // convert messages to the format expected by the model
-            messages = messages.map(message => {
+            let formatedMessages = messages.map(message => {
                 return {
                     role: message.role,
                     content: message.content
                 }
             })
+            let clonedFormatedMessages = [...formatedMessages]
 
-            const modelPackagePath = await getModelPackagePath()
-            const c = require(modelPackagePath).default
-            const chatApi: ChatAPI = new c()
-            const message = await chatApi.complete({
-                messages,
-                manifest: await getManifest(model)
-            })
-            return [message]
+            const actors = await getActors(conversationId)
+            const enabledActors = actors.filter(actor => actor.enabled)
+            // For messages with enabled actors, and last message is in "user" role
+            if (
+                enabledActors.length > 0
+                && formatedMessages.length > 0
+                && formatedMessages[formatedMessages.length - 1].role === "user"
+            ) {
+                const content = formatedMessages[formatedMessages.length - 1].content
+                formatedMessages[formatedMessages.length - 1].content = `{{${content}}} \n\n ${FOLLOW_EACH_USER_MESSAGE_PROMPT_MESSAGE}`
+
+                // complete messages to get the model chosed action to be executed
+                const actionRequestMessage = await completMessages(formatedMessages)
+                formatedMessages.push(actionRequestMessage)
+
+                // extract json from the message and call the actions
+                const regex = /```json([\s\S]*?)```/g;
+                const match = regex.exec(actionRequestMessage.content)
+                if (match) {
+                    const json = match[1]
+                    const actions = JSON.parse(json) as ActionsRequest
+                    try {
+                        const responses = await this.callActions(actions)
+                        const content = INFORM_ACTIOS_RESPONSE_PROMPT_MESSAGE(responses)
+                        formatedMessages.push({
+                            role: "user",
+                            content: content
+                        })
+                        const restult = await completMessages(formatedMessages)
+                        await addMessage(conversationId, restult.role, restult.content)
+                    } catch (error) {
+                        // chage the last message to inform not chose any action    
+                        const content = clonedFormatedMessages[clonedFormatedMessages.length - 1].content
+                        // attach prompt to not 
+                        clonedFormatedMessages[clonedFormatedMessages.length - 1].content = `${content} \n\n ${FOLLOW_EACH_USER_MESSAGE_NOT_CHOOSE_ACTOR_PLUGIN_PROMPT_MESSAGE}`
+                        // complete messages
+                        const restult = await completMessages(formatedMessages)
+                        await addMessage(conversationId, restult.role, restult.content)
+                    }
+                }
+            }
+            // For messages with no enabled actors
+            else {
+                const restult = await completMessages(formatedMessages)
+                await addMessage(conversationId, restult.role, restult.content)
+            }
         }
     }
 

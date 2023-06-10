@@ -1,5 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit"
-import { FOLLOW_EACH_USER_MESSAGE_PROMPT_MESSAGE, INFORM_ACTORS_LIST_FORMAT_PROMPT_MESSAGE, INFORM_ACTORS_LIST_PROMPT_MESSAGE, INFORM_ACTORS_RESPONSE_FORMAT_PROMPT_MESSAGE, NAME } from "./constants"
+import { NAME } from "./constants"
 import { Actor, Conversation, Conversations, Message } from "../../types"
 import { integrateBackendConditionally } from "../../utils/integrate"
 import { RootState } from ".."
@@ -105,7 +105,6 @@ export const completeMessages = createAsyncThunk<
     void,
     {
         conversationId: Conversation['id'],
-        messages: Message[],
         model: string
     },
 
@@ -116,38 +115,16 @@ export const completeMessages = createAsyncThunk<
     `${NAME}/completeChat`,
     async ({
         conversationId,
-        messages,
         model
-    }, thunkApi) => {
+    }) => {
         return await integrateBackendConditionally({
             none: () => {
             },
             electron: async () => {
-                const actors = thunkApi.getState().chat.currentActors
-                const enabledActors = actors?.filter(actor => actor.enabled)
-                if (enabledActors && enabledActors.length > 0) {
-                    messages = messages.map(message => {
-                        if (message.role === "user") {
-                            message.content = [message.content, FOLLOW_EACH_USER_MESSAGE_PROMPT_MESSAGE].join('\n\n')
-                        }
-                        return message
-                    })
-                }
-                const completedMessages = await invock<CompleteMessages>("complete-messages", {
-                    model: model,
-                    messages: messages
+                await invock<CompleteMessages>("complete-messages", {
+                    conversationId,
+                    model,
                 })
-
-                // TODO: if actors plugin are enabled, call thier endpoints
-                // Then, the endpoint should return a json format response
-                // And use that response to complet the all messages again
-
-                for (const message of completedMessages) {
-                    await thunkApi.dispatch(addMessage({
-                        conversationId,
-                        message
-                    }))
-                }
             }
         })
     }
@@ -207,29 +184,11 @@ export const addMessage = createAsyncThunk<
             none: () => {
             },
             electron: async () => {
-                const addMessageHelper = async (role: string, content: string) => {
-                    await invock<AddMessage>("add-message", {
-                        conversationId,
-                        role,
-                        content,
-                    })
-                }
-                // if no messages in the conversation 
-                // and if any actor plugins are enabled
-                // inject system prompt messaegs
-                const messages = thunkApi.getState().chat.currentChatMessages
-                const actors = thunkApi.getState().chat.currentActors
-                const enabledActors = actors?.filter(actor => actor.enabled)
-                if ((!messages || messages.length === 0) && (enabledActors && enabledActors.length > 0)) {
-                    if (enabledActors.length > 0) {
-                        // inject system prompt messages about the actors
-                        await addMessageHelper("system", INFORM_ACTORS_LIST_FORMAT_PROMPT_MESSAGE)
-                        await addMessageHelper("system", INFORM_ACTORS_RESPONSE_FORMAT_PROMPT_MESSAGE)
-                        await addMessageHelper("system", INFORM_ACTORS_LIST_PROMPT_MESSAGE)
-
-                    }
-                }
-                await addMessageHelper(message.role, message.content)
+                await invock<AddMessage>("add-message", {
+                    conversationId,
+                    role: message.role,
+                    content: message.content,
+                })
                 await thunkApi.dispatch(listMessages(conversationId))
             }
         })

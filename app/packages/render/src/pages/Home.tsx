@@ -81,7 +81,6 @@ export default function() {
         dispatch(completeMessages({
             model: currentModel || "",
             conversationId: currentChat.id,
-            messages: messages
         }))
     }
     const disptachListMessages = () => {

@@ -48,3 +48,22 @@ export interface Manifest {
         }[]
     }[]
 }
+
+export interface ActionRequest {
+    actor_name: string,
+    action_name: string,
+    parameters?: {
+        [key: string]: string
+    }
+}
+
+export type ActionsRequest = ActionRequest[]
+
+export interface ActionResponse {
+    actor_name: string,
+    action_name: string,
+    response: string
+}
+
+export type ActionsResponse = ActionResponse[]
+
