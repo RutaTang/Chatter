@@ -4,7 +4,7 @@ import type {
     RetitleConversation,
     DeleteConversation,
     GetActors,
-    EnableActors
+    ToggleActors
 } from "./conversation"
 export * from './conversation'
 import type {
@@ -37,7 +37,7 @@ export type Channel =
     RetitleConversation |
     DeleteConversation |
     GetActors |
-    EnableActors |
+    ToggleActors |
     // Message channels
     ListMessages |
     AddMessage |

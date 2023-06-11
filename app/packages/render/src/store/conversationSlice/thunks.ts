@@ -3,7 +3,7 @@ import { NAME } from "./constants"
 import { Actor, Conversation, Conversations, Message } from "../../types"
 import { integrateBackendConditionally } from "../../utils/integrate"
 import { RootState } from ".."
-import { UpdateMessageRole, type AddConversation, type AddMessage, type CompleteMessages, type DeleteConversation, type GetModelForConversation, type ListAllModels, type ListConversations, type ListMessages, type RetitleConversation, type SwapTwoMessagesForAConversation, type UpdateModelForConversation, DeleteMessage, GetActors } from "types"
+import { UpdateMessageRole, type AddConversation, type AddMessage, type CompleteMessages, type DeleteConversation, type GetModelForConversation, type ListAllModels, type ListConversations, type ListMessages, type RetitleConversation, type SwapTwoMessagesForAConversation, type UpdateModelForConversation, DeleteMessage, GetActors, ToggleActors } from "types"
 import { invock } from "../../utils/service"
 import { Omit } from "@react-spring/web"
 
@@ -241,21 +241,7 @@ export const addMessageAndCompleteChat = createAsyncThunk<
         conversationId, message, model
     }, thunkAPI) => {
         await thunkAPI.dispatch(addMessage({ conversationId, message }))
-        const messages = await integrateBackendConditionally({
-            none: () => {
-                const messages = thunkAPI.getState().chat.currentChatMessages
-                messages?.push({
-                    id: 1,
-                    ...message
-                })
-                return messages || []
-            },
-            electron: async () => {
-                const messages = await invock<ListMessages>("list-messages", { conversationId })
-                return messages || []
-            }
-        })
-        await thunkAPI.dispatch(completeMessages({ model, conversationId, messages }))
+        await thunkAPI.dispatch(completeMessages({ model, conversationId }))
     }
 )
 
@@ -390,6 +376,23 @@ export const getActors = createAsyncThunk<
     async ({ conversationId }) => {
         const actors = await invock<GetActors>("get-actors", { conversationId })
         return actors
+    }
+)
+
+export const toggleActors = createAsyncThunk<
+    void,
+    {
+        conversationId: number,
+        actors: string[]
+    },
+    {
+        state: RootState
+    }
+>(
+    `${NAME} / enableActors`,
+    async ({ conversationId, actors }, thunkApi) => {
+        await invock<ToggleActors>("toggle-actors", { conversationId, actors })
+        await thunkApi.dispatch(getActors({ conversationId }))
     }
 )
 

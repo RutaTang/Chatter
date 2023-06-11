@@ -1,4 +1,4 @@
-import { addConversation, deleteConversation, getActors, getEnabledActors, listConversations, retitleConversation, setEnabledActors } from "../../store/operations/conversation";
+import { addConversation, deleteConversation, getActors, getEnabledActors, listConversations, retitleConversation, toggleActors  } from "../../store/operations/conversation";
 import { serviceEngine, Service } from "../engine";
 import type {
     ListConversations as ListConversationsChannel,
@@ -6,7 +6,7 @@ import type {
     RetitleConversation as RetitleConversationChannel,
     DeleteConversation as DeleteConversationChannel,
     GetActors as GetActorsChannel,
-    EnableActors as EnableActorsChannel,
+    ToggleActors as ToggleActorsChannel,
 } from 'types'
 
 @serviceEngine.handle<ListConversationsChannel>("list-conversations")
@@ -62,7 +62,7 @@ export class DeleteConversation extends Service<DeleteConversationChannel> {
 }
 
 @serviceEngine.handle<GetActorsChannel>("get-actors")
-export class GetEnabledActors extends Service<GetActorsChannel> {
+export class GetActors extends Service<GetActorsChannel> {
 
     constructor() {
         super()
@@ -74,13 +74,13 @@ export class GetEnabledActors extends Service<GetActorsChannel> {
 
 }
 
-@serviceEngine.handle<EnableActorsChannel>("enable-actors")
-export class SetEnabledActors extends Service<EnableActorsChannel> {
+@serviceEngine.handle<ToggleActorsChannel>("toggle-actors")
+export class EnableActors extends Service<ToggleActorsChannel> {
 
     constructor() {
         super()
         this.process = async (_e, { conversationId, actors }) => {
-            await setEnabledActors(conversationId, actors)
+            await toggleActors(conversationId, actors)
         }
     }
 }

@@ -5,7 +5,7 @@ import SideBar from "../components/SideBar"
 import Dialogue from "../components/Dialogue"
 import { ROLE_ICON_MAP } from "../constants"
 import { useAppDispatch, useAppSelector } from "../store"
-import { addConversation, addMessage, deleteConversation, loadConversations, updateConversationTitle, completeMessages, listMessages, addMessageAndCompleteChat, loadAllModels, getModelForCurrentConversation, updateModelForCurrentConversation, moveMessageUpOrDown, updateMessageRole, deleteMessage, getActors } from "../store/conversationSlice/thunks"
+import { addConversation, addMessage, deleteConversation, loadConversations, updateConversationTitle, completeMessages, listMessages, addMessageAndCompleteChat, loadAllModels, getModelForCurrentConversation, updateModelForCurrentConversation, moveMessageUpOrDown, updateMessageRole, deleteMessage, getActors, toggleActors } from "../store/conversationSlice/thunks"
 import { selectChat } from "../store/conversationSlice";
 import { Conversation, Message, Role } from "../types";
 import OptionBtn from "../components/OptionBtn";
@@ -140,6 +140,15 @@ export default function() {
             return
         }
         dispatch(getActors({ conversationId: currentChat.id }))
+    }
+    const dispatchToggleActors = (actors: string[]) => {
+        if (!currentChat) {
+            return
+        }
+        dispatch(toggleActors({
+            conversationId: currentChat.id,
+            actors: actors
+        }))
     }
 
     // More UIs
@@ -278,8 +287,8 @@ export default function() {
                             }}
                             // Actor related
                             actors={actors}
-                            onCheckActor={(actor, enabled) => {
-                                console.log(actor, enabled)
+                            onCheckActor={(actor) => {
+                                dispatchToggleActors([actor])
                             }}
                             disableChangeActors={messages && messages.length > 0}
                         />

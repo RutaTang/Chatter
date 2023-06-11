@@ -74,12 +74,20 @@ export async function getActors(id: number) {
     return actors;
 }
 
-export async function setEnabledActors(id: number, actors: string[]) {
+export async function toggleActors(id: number, actors: string[]) {
     const conversation = await AppDataSource.getRepository(Conversation).findOneOrFail({
         where: {
             id: id
         }
     });
-    conversation.actors = actors;
+    const enabledActors = conversation.actors;
+    actors.forEach(actor => {
+        if (enabledActors.includes(actor)) {
+            enabledActors.splice(enabledActors.indexOf(actor), 1);
+        } else {
+            enabledActors.push(actor);
+        }
+    })
+    conversation.actors = enabledActors;
     await AppDataSource.getRepository(Conversation).save(conversation);
 }

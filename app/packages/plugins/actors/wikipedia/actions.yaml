@@ -1,0 +1,5 @@
+- name: "Search on wikipedia"
+  description: "Search and extract information online on wikipedia"
+  parameters:
+    - name: "title"
+      description: "You should give the title you want to search on wipipedia (e.g. Mathematics)"

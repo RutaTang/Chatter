@@ -41,8 +41,8 @@ export interface GetActors {
 }
 
 // EnableActors Channel
-export interface EnableActors {
-    name: "enable-actors"
+export interface ToggleActors {
+    name: "toggle-actors"
     args: { conversationId: Conversation["id"], actors: string[] }
     return: void
 }

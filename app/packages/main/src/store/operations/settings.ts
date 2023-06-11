@@ -1,7 +1,7 @@
 import { In, Not } from "typeorm";
 import { AppDataSource } from "../data-source";
 import { SettingContentSection, SettingContentSectionItem, SettingSideSection, SettingSideSectionItem } from "../entities/settings";
-import { BUILT_IN_MODELS_PLUGINS_PATH } from "../../utils";
+import { BUILT_IN_ACTORS_PLUGINS_PATH, BUILT_IN_MODELS_PLUGINS_PATH } from "../../utils";
 import { readFile } from 'fs/promises'
 import path from "path";
 import { getChildrenDirectories } from "../../utils/fs";
@@ -160,6 +160,9 @@ export async function initDefaultSettings() {
         const menifestPath = path.join(modelPath, "manifest.yaml")
         const menifestString = (await readFile(menifestPath)).toString()
         const manifest: Manifest = parse(menifestString)
+        if (!manifest.sections) {
+            manifest.sections = []
+        }
         modelsManifests.push(manifest)
     }
 
@@ -167,6 +170,27 @@ export async function initDefaultSettings() {
     await loadManifests({
         title: "Models",
         manifests: modelsManifests
+    })
+
+    // === Actors Side Section ===
+
+    // Get built-in actors manifests
+    const actorsPaths = await getChildrenDirectories(BUILT_IN_ACTORS_PLUGINS_PATH)
+    const actorsManifests: Manifest[] = []
+    for (const actorPath of actorsPaths) {
+        const menifestPath = path.join(actorPath, "manifest.yaml")
+        const menifestString = (await readFile(menifestPath)).toString()
+        const manifest: Manifest = parse(menifestString)
+        if (!manifest.sections) {
+            manifest.sections = []
+        }
+        actorsManifests.push(manifest)
+    }
+
+    // Load manifests
+    await loadManifests({
+        title: "Actors",
+        manifests: actorsManifests
     })
 
 
@@ -276,7 +300,14 @@ export async function listAllModels() {
     return sideSection.items?.map(item => item.title) || []
 }
 
-// TODO: get real actors
 export async function listAllActors(): Promise<string[]> {
-    return ["File Operator", "Google"]
+    const sideSection = await AppDataSource.getRepository(SettingSideSection).findOneOrFail({
+        relations: {
+            items: true
+        },
+        where: {
+            title: "Actors"
+        }
+    })
+    return sideSection.items?.map(item => item.title) || []
 }

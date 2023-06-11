@@ -1,4 +1,5 @@
 import { ActionsResponse } from "types"
+import { ActorMetaData } from "../types"
 
 export const INFORM_ACTORS_LIST_FORMAT_PROMPT_MESSAGE = `
 The actor plugins are available for you to use in order to interact with the real world. Each actor plugin has a set of actions that you can request it to perform. The actor plugins structure and format is as follow JSON code:
@@ -56,70 +57,11 @@ Your response must follow these rules:
 **Note: multiple actions will not be run in order but instead they will be run in parallel**
 `
 
-export const INFORM_ACTORS_LIST_PROMPT_MESSAGE = `
+export const INFORM_ACTORS_LIST_PROMPT_MESSAGE = (actors: ActorMetaData[]) => `
 Here are all available actor plugins:
 
 \`\`\`json
-[
-   {
-      "name": "System operator",
-      "actions":[
-         {
-            "name":"Write to file",
-            "description":"This action is only used to write the content to a file without any other features",
-            "parameters":[
-              {
-                  "name":"file_name",
-                  "description":"The name of the file you want to put the content in"
-               },
-               {
-                  "name":"content",
-                  "description":"The content you want to put to the file"
-               }
-            ]
-         }
-      ]
-   },
-   {
-      "name": "Google",
-      "actions":[
-         {
-            "name":"Search on Google",
-            "description":"This action can get and extract information/data from Google search results",
-            "parameters":[
-               {
-                  "name":"content",
-                  "description":"The content you want to search on Google"
-               }
-            ]
-         }
-      ]
-   },
-   {
-      "name": "Stock Analyzer",
-      "actions":[
-         {
-            "name":"Find top/trend stocks",
-            "description":"This action will give you several top stocks",
-            "parameters":[]
-         },
-         {
-            "name":"Buy the stock",
-            "description":"This action will buy the stock you specify with a certain amount",
-            "parameters":[
-               {
-                  "name":"stock",
-                  "description":"One stock you want to buy, give the code or name of the stock"
-               },
-              {
-                  "name":"amount",
-                  "description":"The amount  of the specified stock you want to buy"
-               }
-            ]
-         }
-      ]
-   }
-]
+${JSON.stringify(actors, null, 2)}
 \`\`\`
 `
 
@@ -136,6 +78,6 @@ export const INFORM_ACTIOS_RESPONSE_PROMPT_MESSAGE = (actionsResponse: ActionsRe
 ${actionsResponseString}
 \`\`\`
 
-    You should respond with this information in mind while combing with your knowledge. You should not choose any plugins for this response and you are not necessary to give response in JSON fomat and you can respond in natural language.`
+    You should respond with this information in mind while combing with your knowledge. You can trust the information provided. You should not choose any plugins for this response and you are not necessary to give response in JSON fomat and you can respond in natural language.`
 }
 

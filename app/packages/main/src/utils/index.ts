@@ -12,3 +12,6 @@ export const BUILT_IN_PLUGINS_PATH = app.isPackaged ? path.join(process.resource
 
 // place the plugins > models folder in
 export const BUILT_IN_MODELS_PLUGINS_PATH = app.isPackaged ? path.join(BUILT_IN_PLUGINS_PATH, "models") : path.join(BUILT_IN_PLUGINS_PATH, "models")
+
+// place the plugins > actors folder in
+export const BUILT_IN_ACTORS_PLUGINS_PATH = app.isPackaged ? path.join(BUILT_IN_PLUGINS_PATH, "actors") : path.join(BUILT_IN_PLUGINS_PATH, "actors")
