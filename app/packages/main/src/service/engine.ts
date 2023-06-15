@@ -30,7 +30,7 @@ class ServiceEngine {
      * @param channel - The channel to register.
      */
     handle<T extends Channel>(channel: T['name']) {
-        return (target: typeof Service<T>) => {
+        return (target: { new(): Service<T> }) => {
             const instance = new target();
             if (!instance.process) {
                 throw new Error("Service must implement process method");
